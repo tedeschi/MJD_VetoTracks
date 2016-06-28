@@ -26,15 +26,15 @@ Doc/*.log
 
 # keep the data directories, but not the content
 
-VetoDisplay/output/2/*
-VetoDisplay/output/3/*
-VetoDisplay/output/4/*
-VetoDisplay/output/5/*
-VetoDisplay/output/6/*
-VetoDisplay/output/7/*
-VetoDisplay/output/8/*
-VetoDisplay/output/9/*
-VetoDisplay/output/other/*
-VetoDisplay/output/plots/*
+VetoDisplay/output/2/*.pdf
+VetoDisplay/output/3/*.pdf
+VetoDisplay/output/4/*.pdf
+VetoDisplay/output/5/*.pdf
+VetoDisplay/output/6/*.pdf
+VetoDisplay/output/7/*.pdf
+VetoDisplay/output/8/*.pdf
+VetoDisplay/output/9/*.pdf
+VetoDisplay/output/other/*.pdf
+VetoDisplay/output/plots/*.pdf
 
-Landscape/output/*
+Landscape/output/*.pdf
