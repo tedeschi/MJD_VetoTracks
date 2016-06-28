@@ -1,9 +1,10 @@
 # Readme.md  MJD_VetoTracks
 #
-#  David J Tedeschi - Univ. of South Carolina - 2015
+#  David J Tedeschi - Univ. of South Carolina - 2016
 #
 
-Directories:
+Directories
+------------
 
 VetoDisplay - muon track visualization program
 Landscape - Black Hills topology 
@@ -11,15 +12,18 @@ Data - all input dat files
 Doc -  Latex Documentation of this projecy
 
 
-Building the APPs:
+Building the APPs
+------------------
  
 Descend into the VetoDisplay or Landscape directory and use the commands 
 "make clean" then "make create" to compile and create an executable. 
 
-Dependencies:
+Dependencies
+-------------
 Must first have Root, MGDO, and GAT installed. 
 
-Execution:
+Execution
+---------
 ./Vetodisplay - run with no arguments reads all input files and generates pdf outputs
 
 ./VetoDisplay <runNumber> <eventCount>
@@ -27,7 +31,8 @@ If there is a certain muon event you'd like to see in a rotatable 3-D model, sim
 with the arguments above.
 
 
-Output:
+Output
+------
 When run from the command line, VetoDisplay generates pdf files to the "output" folder. 
 The subdirectories coorespond to number of panels hit, with 9+ panels hit going into the 'other' directory, 
 as well as a final heatmap.
@@ -41,7 +46,7 @@ careful, dangourous command if used from any other directory!
 
 
 
-Documentation:
-
+Documentation
+--------------
 For more information, see the Doc folder.
 
