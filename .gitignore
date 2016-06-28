@@ -1,0 +1,40 @@
+#
+# .gitignore file to help keep unwanted files out of the repository
+#   
+#   Dave Tedeschi - Univ. of South Carolina  - 2016
+#
+
+# some standard extensions
+*.a
+*.dylib
+*.pyc
+*.pcm
+*DICT.C
+*DICT.h
+.depend
+.*.swp
+*.o
+*.so
+*.dSYM
+*.rootmap
+*~
+*.*~
+
+# latex extras
+Doc/*.aux
+Doc/*.log
+
+# keep the data directories, but not the content
+
+VetoDisplay/output/2/*
+VetoDisplay/output/3/*
+VetoDisplay/output/4/*
+VetoDisplay/output/5/*
+VetoDisplay/output/6/*
+VetoDisplay/output/7/*
+VetoDisplay/output/8/*
+VetoDisplay/output/9/*
+VetoDisplay/output/other/*
+VetoDisplay/output/plots/*
+
+Landscape/output/*
