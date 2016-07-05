@@ -12,7 +12,7 @@
 
 using namespace std;
 
-string inputFile = "../Data/vetoskims/vList_KJR_03.txt"; //EDIT THIS FOR INPUT FILE
+string inputFile = "../Data/vetoskims/vList_DS1_1-6.txt"; //EDIT THIS FOR INPUT FILE
 
 int isNextTo(int panel1, int panel2);
 int isLayerHit(int panel1, int panel2);
@@ -1321,6 +1321,7 @@ void VetoDisplay()
 	string line = "";
 	string cell = "";
 	Int_t lineLength = 0;
+	bool goodPanelNum = false;
 	
 	//read in vetohit array from file
     ifstream VetoHitsFile;
@@ -1333,6 +1334,7 @@ void VetoDisplay()
 		numberOfPanelsHit = 0;
 		totalQDC = 0;
 		lineLength = 0;
+		goodPanelNum = false;
 		
 		stringstream  lineStream(line);
 		lineStream >> runNumber >> entry >> eventCount >> scalerTime;
@@ -1344,9 +1346,15 @@ void VetoDisplay()
 		}
 
 		while(getline(lineStream,cell,' ')) {
+			try {
 			qdcVals[lineLength] = stoi(cell); //parses input values
+			}
+			catch(exception e) {
+				cout << "wrong number of panels. " << lineLength << " given." << endl;
+				break;
+			}
 			lineLength++;
-			if(lineLength == 32) { //stops trailing spaces/values after qdcvals
+			if(lineLength == 32) { //stops trailing spaces/values after 32 qdcvals
 				break;
 			}
 		}
@@ -1355,28 +1363,34 @@ void VetoDisplay()
 			lineLength++;
 		}
 		*/
-		//fill in any missing detectors with 0 qdc
-		if(lineLength != 32) {
-			for(int i = lineLength; i < 32; i++) {
-				qdcVals[i] = 0;
-			}
-		}
 		
-		for(int i = 0; i < 32; i++) {
-			if(qdcVals[i] != 0) {
-				numberOfPanelsHit++;
-		    	totalQDC += qdcVals[i];
-		    	qdcValSum[i] += qdcVals[i];
-		    }
+		if(lineLength == 32 || lineLength == 24) {
+			goodPanelNum = true;
 		}
-		/*
-		for(int i = 0; i < 32; i++) {
-			cout << qdcVals[i] << " ";
-		}
-		cout << endl;
-		*/
-		DrawEvent(qdcVals, numberOfPanelsHit, totalQDC, runNumber, eventCount);
-		fillPlots(qdcVals, totalQDC, numberOfPanelsHit, ievent);
+		if(goodPanelNum == true) {
+			//if linelength is 24, fill in any missing detectors with 0 qdc
+			if(lineLength != 32) { //lineLength 
+				for(int i = lineLength; i < 32; i++) {
+					qdcVals[i] = 0;
+				}
+			}
+		
+			for(int i = 0; i < 32; i++) {
+				if(qdcVals[i] != 0) {
+					numberOfPanelsHit++;
+					totalQDC += qdcVals[i];
+					qdcValSum[i] += qdcVals[i];
+				}
+			}
+			/*
+			for(int i = 0; i < 32; i++) {
+				cout << qdcVals[i] << " ";
+			}
+			cout << endl;
+			*/
+			DrawEvent(qdcVals, numberOfPanelsHit, totalQDC, runNumber, eventCount);
+			fillPlots(qdcVals, totalQDC, numberOfPanelsHit, ievent);
+	}
 	}
 	
 	
@@ -1400,7 +1414,7 @@ void VetoDisplay()
 	DrawEvent(qdcValSum, totalQDC, numberOfPanelsHit, runNumber, eventCount); 
 	
    	char pcanname[150]; 
-   	sprintf(pcanname,"assembly_output/other/assembly_sum.pdf");
+   	sprintf(pcanname,"output/other/assembly_sum.pdf");
    	ecan->Print(pcanname,"pdf");
 
 	//lastly, draw and print the plots	
