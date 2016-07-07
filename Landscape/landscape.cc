@@ -65,7 +65,7 @@ void landscape() {
 	cout << "bin widthX: " << binWidthx << endl;
 	cout << "bin widthY: " << binWidthy << endl;
 	
-	
+	/*
 	//some manual testing
 	double xcoord = xmaxbin; //2702
 	double ycoord = ymaxbin; //1624
@@ -96,7 +96,7 @@ void landscape() {
 	int i,o,p;
 	h->GetBinXYZ(h->FindBin(-10000,-50000),i,o,p);
 	cout << "i: " << i << " o: " << o << endl;
-	
+	*/
 	
 	getchar();
 	for(double i = 0; i < binx; i++) {
@@ -104,9 +104,9 @@ void landscape() {
 			double k = h->GetBinContent(i,j);
 			binnum = h->GetBin(i,j); //global bin number
 			
+			//we subtract from MJDbin to get coordinates relative to MJD, and multiply by binWidth to get units in meters rather than bins
 			phi = atan((j-MJDbiny)/(i-MJDbinx)) * (180/PI);
 			surfDist = sqrt((((i-MJDbinx)*binWidthx)*((i-MJDbinx)*binWidthx))+(((j-MJDbiny)*binWidthy)*((j-MJDbiny)*binWidthy)));
-			//we subtract from MJDbin to get coordinates relative to MJD, and multiply by binWidth to get units in meters rather than bins
 			r = sqrt((((i-MJDbinx)*binWidthx)*((i-MJDbinx)*binWidthx)) + (((j-MJDbiny)*binWidthy)*((j-MJDbiny)*binWidthy)) + ((k - (depthAt0 - 1478))*(k - (depthAt0 - 1478))));
 			theta = asin(surfDist/r) * (180/PI);
 			
@@ -129,9 +129,9 @@ void landscape() {
 	}
 	
 	TApplication *myapp=new TApplication("myapp",0,0);
-	TCanvas *c1 = new TCanvas("c1","c1",900,800);
-	TCanvas *c2 = new TCanvas("c2","c2",900,800);
-	TCanvas *axisProj = new TCanvas("axisProj","X and Y axis projections",900,800);
+	TCanvas *c1 = new TCanvas("c1","c1",1200,1200);
+	TCanvas *c2 = new TCanvas("c2","c2",1200,1200);
+	TCanvas *axisProj = new TCanvas("axisProj","X and Y axis projections",1200,1200);
 	
 	//some coloring
 	const Int_t rgbn = 5;
@@ -175,15 +175,17 @@ void landscape() {
 	TH1D *proj4 = slantHist->ProjectionY();
 	proj4->SetTitle("Slant Depth Y Projection");
 	proj4->Draw();
+	
 	//print out the canvases
-	/*
+	cout << "Making pictures..." << endl;
 	char thetaPhiHistcan[150];
-    sprintf(thetaPhiHistcan,"thetaPhiTop.jpg");
-    c1->Print(thetaPhiHistcan,"pdf");
+    sprintf(thetaPhiHistcan,"thetaPhiTop.png");
+    c1->Print(thetaPhiHistcan,"png");
     char slantcan[150];
-    sprintf(slantcan,"slantDepthTop.jpg");
-    c2->Print(slantcan,"pdf");
-	*/
+    sprintf(slantcan,"slantDepthTop.png");
+    c2->Print(slantcan,"png");
+    cout << "Done! Use ctrl+c to exit." << endl;
+	
 	myapp->Run();
 
 	f->Close();
