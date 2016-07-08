@@ -18,6 +18,7 @@
 #include "TBenchmark.h"
 #include <TColor.h>
 
+#include "TStyle.h"
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
 #include "TGeoMedium.h"
