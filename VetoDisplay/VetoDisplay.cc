@@ -5,7 +5,7 @@
 // .x VetoDisplay.C++
 // to clear output all output subdirectories:
 // cd to the main output directory "assembly_output" and use the command:
-// find . ! -type d -exec rm '{}' \;
+// 
 // (careful, dangourous command if used from any other directory)
 //-----------------------------------------------------------------------
 #include "VetoDisplay.hh"
@@ -76,6 +76,13 @@ TCanvas *ecan;
 Double_t phi;
 Double_t theta;
 Double_t pi = 3.1415926535897;
+int topSide = 0;
+int bottomSide = 0;
+int northSide = 0;
+int eastSide = 0;
+int southSide = 0;
+int westSide = 0;
+int numOfPlanesHit = 0;
 //---------------------------------------------------------------------------------------------------------------------
 void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t runNumber, Int_t eventCount)
 {
@@ -515,7 +522,6 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	vector<vector<Double_t>> allHitCoords;
 	bool alreadyDone[32] = {false}; //used so the same layer hit isnt added twice
 	int numOfPoints = 1;
-	int numOfPlanesHit = 0;
 	
 	//these for loops check if layer partner hit exists, if it does, draws a hole for the layer hit
 	for(int i = 0; i < 32; i++) {
@@ -581,12 +587,6 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
    
    
    //draw the tracks for any two sides
-	int topSide = 0;
-	int bottomSide = 0;
-	int northSide = 0;
-	int eastSide = 0;
-	int southSide = 0;
-	int westSide = 0;
    
 	for(int i = 0; i < 32; i ++) {
 		for(int j = 0; j < 12; j++) {
@@ -606,7 +606,6 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 				westSide++;
 		}
    }
-   
 
 	if(numOfPlanesHit <= 2 && numberOfPanelsHit == 4 && (bottomSide == 2 || topSide == 2
 		|| northSide == 2 || eastSide == 2 || southSide == 2 || westSide == 2)) {
@@ -926,6 +925,7 @@ TCanvas *qdctotalcan = new TCanvas("qdctotalcan", "QDC Totals", 900, 0, 1401, 40
 TCanvas *qdctotaln = new TCanvas("qdctotaln", "QDC totals for each n", 1000, 500);
 TCanvas *thetaPhican = new TCanvas("thetaPhican","Theta and Phi of particle's tracks", 900, 0, 900, 600);
 TCanvas *costhetaPhican = new TCanvas("costhetaPhican","Cos(Theta) and Phi of particle's tracks", 900, 0, 900, 600);
+TCanvas *QDCanglecan = new TCanvas("QDCanglecan"," ", 1200, 800);
 
 TH1F *graph1 = new TH1F("graph1","Number of panels hit per event", 65, 0, 33);
 TH1F *graph2 = new TH1F("graph2","Times each panel hit", 65, 0, 33);
@@ -945,6 +945,7 @@ TH1F *graphn8 = new TH1F("graphn8","QDC total for 8 panels hit", 100, 0, 18000);
 TH1F *graphn9 = new TH1F("graphn9","QDC total for 9 panels hit", 100, 0, 18000);
 TH2F *thetaPhi = new TH2F("thetaPhi","Theta vs. Phi for top and bottom n=4 layer hits", 90, -185, 185, 90, -1, 50);
 TH2F *costhetaPhi = new TH2F("costhetaPhi","Cos(Theta) vs. Phi for top and bottom n=4 layer hits", 90, -185, 185, 90, -1.3, 1.3);
+TH2F *QDCangle = new TH2F("QDCangle","QDC vs Theta for top and bottom n=4 layer hits", 180, 0, 50, 180, 0 , 8000);
 	
 //fills all plots and prints out wireframe pdfs
 void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t ievent) {
@@ -953,6 +954,7 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 	graph4->Fill(numberOfPanelsHit, totalQDC);
 	graph8->Fill(totalQDC);	
 
+	
 	for (Int_t i = 0; i < 32; i++) {
 		if(qdcvals[i] != 0) {
 			graph2->Fill(i+1);
@@ -963,6 +965,9 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 			}
 			if(numberOfPanelsHit == 4) {
 				graph6->Fill(qdcvals[i], i+1);
+			}
+			if(numOfPlanesHit <= 2 && numberOfPanelsHit == 4 && bottomSide == 2 && topSide == 2) { //top and bottom plane hits
+				QDCangle->Fill(theta, qdcvals[i]);
 			}
 		}
 	}
@@ -1045,6 +1050,16 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 }
 
 void drawPlots() {
+	//some coloring ----------------------------------------------------
+	const Int_t rgbn = 5;
+    const Int_t contn = 999;
+    Double_t stops[rgbn] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+    Double_t red[rgbn]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+    Double_t green[rgbn] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+    Double_t blue[rgbn]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+    TColor::CreateGradientColorTable(rgbn, stops, red, green, blue, contn);
+    gStyle->SetNumberContours(contn);
+    
 	//Drawing graphs canvas
 	graphs->Divide(3,2);
 	
@@ -1068,7 +1083,7 @@ void drawPlots() {
 	graph3->SetMarkerStyle(kFullDotSmall);
 	//gStyle->SetPalette(kBird);
 	graph3->SetStats(0);
-    graph3->Draw();
+    graph3->Draw("colz");
 	
 	graphs->cd(4);
 	graph4->SetXTitle("Multiplicity");
@@ -1076,27 +1091,27 @@ void drawPlots() {
 	graph4->SetMarkerStyle(kFullDotSmall);
 	//graph4->GetYaxis()->SetTitleOffset(1.7);
 	graph4->SetStats(0);
-	graph4->Draw();
+	graph4->Draw("colz");
     
     graphs->cd(5);
     graph5->SetYTitle("Panel number");
     graph5->SetXTitle("QDC");
     graph5->SetMarkerStyle(kFullDotSmall);
     graph5->SetStats(0);
-    graph5->Draw();
+    graph5->Draw("colz");
     
     graphs->cd(6);
     graph6->SetYTitle("Panel number");
     graph6->SetXTitle("QDC");
     graph6->SetMarkerStyle(kFullDotSmall);
     graph6->SetStats(0);
-    graph6->Draw();
+    graph6->Draw("colz");
 	
 	//Drawing qdccanvas canvas
 	QDCcanvas->Divide(3,2);
 	
 	QDCcanvas->cd(1);
-	graph3->Draw();
+	graph3->Draw("colz");
 	
 	TH1D *qdcpanelproj = graph3->ProjectionX();
 	QDCcanvas->cd(4);
@@ -1106,7 +1121,7 @@ void drawPlots() {
 	qdcpanelproj->Draw("bar");	
 	
 	QDCcanvas->cd(2);
-	graph5->Draw();
+	graph5->Draw("colz");
 	
 	TH1D *qdcpanelprojn2 = graph5->ProjectionX();
 	QDCcanvas->cd(5);
@@ -1116,7 +1131,7 @@ void drawPlots() {
 	qdcpanelprojn2->Draw("bar");
 	
 	QDCcanvas->cd(3);
-	graph6->Draw();
+	graph6->Draw("colz");
 	
 	TH1D *qdcpanelprojn4 = graph6->ProjectionX();
 	QDCcanvas->cd(6);
@@ -1133,7 +1148,7 @@ void drawPlots() {
 	graph7->SetYTitle("Panel number");
 	graph7->SetMarkerStyle(kFullDotSmall);
 	graph7->SetStats(0);
-	graph7->Draw();
+	graph7->Draw("colz");
 	
 	TH1D *countingPanelProj = graph7->ProjectionY();
 	projcan->cd(2);
@@ -1231,7 +1246,7 @@ void drawPlots() {
 	thetaPhican->cd(1);
 	thetaPhi->SetXTitle("Degrees(Phi)");
 	thetaPhi->SetYTitle("Degrees(Theta)");
-	thetaPhi->Draw();
+	thetaPhi->Draw("colz");
 	
 	TH1D *thetaPhiprojy = thetaPhi->ProjectionY();
 	thetaPhican->cd(2);
@@ -1253,7 +1268,7 @@ void drawPlots() {
 	costhetaPhican->cd(1);
 	costhetaPhi->SetXTitle("Degrees(Phi)");
 	costhetaPhi->SetYTitle("Cos(Theta)");
-	costhetaPhi->Draw();
+	costhetaPhi->Draw("colz");
 	
 	TH1D *costhetaPhiprojy = costhetaPhi->ProjectionY();
 	costhetaPhican->cd(2);
@@ -1268,6 +1283,14 @@ void drawPlots() {
 	costhetaPhiprojx->SetXTitle("Degrees");
 	costhetaPhiprojx->SetYTitle("Count");
 	costhetaPhiprojx->Draw("bar");
+	
+	//QDC angle canvas
+	QDCanglecan->cd();
+	QDCangle->SetStats(0);
+	QDCangle->SetXTitle("Degrees Theta");
+	QDCangle->SetYTitle("QDC per panel");
+	QDCangle->GetYaxis()->SetTitleOffset(1.3);
+	QDCangle->Draw("colz");
 }
 
 void printPlots() {
@@ -1299,6 +1322,9 @@ void printPlots() {
         sprintf(costhetaPhicanprint,"output/plots/cosThetaPhi.pdf");
         costhetaPhican->Print(costhetaPhicanprint,"pdf");
 
+	char QDCanglecanprint[150];
+		sprintf(QDCanglecanprint,"output/plots/QDCangle.pdf");
+		QDCanglecan->Print(QDCanglecanprint,"pdf");
 }
 //--------------------------------------------------------------
 
@@ -1335,6 +1361,13 @@ void VetoDisplay()
 		totalQDC = 0;
 		lineLength = 0;
 		goodPanelNum = false;
+		topSide = 0;
+		bottomSide = 0;
+		northSide = 0;
+		eastSide = 0;
+		southSide = 0;
+		westSide = 0;
+		numOfPlanesHit = 0;
 		
 		stringstream  lineStream(line);
 		lineStream >> runNumber >> entry >> eventCount >> scalerTime;

@@ -33,7 +33,7 @@ void landscape() {
 	Double_t yminRange = h->GetYaxis()->GetXmin();
 	Double_t ymaxRange = h->GetYaxis()->GetXmax();
 	TH2F *thetaPhiHist = new TH2F("thetaPhiHist","Calculated polar angles for topology",nbinx,0,93,nbiny,0,365);
-	TH2F *cosThetaPhiHist = new TH2F("cosThetaPhiHist","Calculated polar angles for topology",nbinx,-1,1,nbiny,0,365);
+	TH2F *cosThetaPhiHist = new TH2F("cosThetaPhiHist","Calculated polar angles for topology",nbinx,0,1,nbiny,0,365);
 	TH2F *slantHist = new TH2F("slantHist","Calculated Slant depth for topology",nbinx,h->GetXaxis()->GetXmin(),h->GetXaxis()->GetXmax(),nbiny,h->GetYaxis()->GetXmin(),h->GetYaxis()->GetXmax());
 	
 	cout << "number of bins x: " << nbinx << endl;
@@ -70,7 +70,7 @@ void landscape() {
 			phi = atan(yAtI/xAtI) * (180/PI);
 			surfDist = sqrt( pow(xAtI,2) + pow(yAtI,2) );
 			r = sqrt( pow(xAtI,2) + pow(yAtI,2) + pow(heightAtI-(heightAt0-MJDDEPTH),2) );
-			theta = asin(surfDist/r) * (180/PI);
+			theta = asin(surfDist/r);
 			
 			if(i >= MJDbinx && j >= MJDbiny) { //quadrant 1
 				phi = 90-phi;
@@ -84,8 +84,9 @@ void landscape() {
 			if(i < MJDbinx && j >= MJDbiny) { //quadrant 4
 				phi = abs(phi)+270;
 			}
-			thetaPhiHist->Fill(theta,phi,r);
-			theta = cos(theta);
+			
+			thetaPhiHist->Fill(theta*(180/PI),phi,r);
+			theta = (cos(theta));
 			cosThetaPhiHist->Fill(theta,phi,r);
 			slantHist->SetBinContent(binnum,r);
 		}
@@ -124,6 +125,8 @@ void landscape() {
 	slantHist->SetXTitle("Meters");
 	slantHist->SetYTitle("Meters");
 	slantHist->GetYaxis()->SetTitleOffset(1.3);
+	slantHist->GetXaxis()->SetNoExponent(true);
+	slantHist->GetYaxis()->SetNoExponent(true);
 	slantHist->Draw("colz");
 	
 		c3->cd();
@@ -194,6 +197,10 @@ void landscape() {
 	thetaPhiHist->Write();
 	cosThetaPhiHist->Write();
 	slantHist->Write();
+	proj1->Write();
+	proj2->Write();
+	proj3->Write();
+	proj4->Write();
 	h->Write();
 	
 	f2->Close();
