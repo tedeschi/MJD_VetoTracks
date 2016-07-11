@@ -2,6 +2,7 @@
 \usepackage{wrapfig}
 \usepackage{graphicx}
 \usepackage{courier}
+\usepackage{float}
 \graphicspath{ {./} }
 \begin{document}
 
@@ -170,8 +171,7 @@ An x-axis projection of \emph{Theta vs. Phi for top and bottom n=4 layer hits} p
 \includegraphics[scale=0.8]{cosThetaPhi.pdf}
 \end{figure}
 
-\textbf{costhetaPhi:} "\emph{Cos(Theta) vs. Phi for top and bottom n=4 layer hits}" \\
-(costhetaPhi pic) \\
+\textbf{\emph{Cos(Theta) vs. Phi for top and bottom n=4 layer hits}:} \\
 This plot describes the phi and cosine of theta spherical angles for the particle's vector for events with 4 panels hit that hit top (inner and outer) and bottom (inner and outer) panels. 
 
 \textbf{\emph{Cos(Theta)}:} \\
@@ -203,7 +203,55 @@ The isLayerHit function is used for checking if a layer partner exists. A 32x32 
 
 The hitLocation function is used for getting the location of a layer hit in the mother coordinate system. The function pushes either the x value or y value of a panel onto a vector depending if it is the top layer or not.
 
-The hitFinder function is used to get a 3-D rotatable model of an individual event. The function opens with Root's TApplication classes. A canvas is drawn after the run number and event count is found, and is automatically put on the TApplication window. Finally, the application is run. To access the hitFinder function, run the executable with ./VetoDisplay runNumber eventCount. 
+The hitFinder function is used to get a 3-D rotatable model of an individual event. The function opens with Root's TApplication classes. A canvas is drawn after the run number and event count is found, and is automatically put on the TApplication window. Finally, the application is run. To access the hitFinder function, run the executable with ./VetoDisplay runNumber eventCount \\
+
+\textbf{Landscape:} \\
+Using topological data, the landscape program generates two main plots of slant depth, one with Cartesian coordinates in meters, and the other with polar coordinates, named slantHist and thetaPhiHist, respectively. Two nested 'for' loops get the coordinates of the center of each bin of the topology chart. The height at each location is fetched, and phi, theta, and slant depth are calculated for each position.
+Phi is adjusted for each quadrant and the graphs are filled. The cosine of theta is taken and filled to a plot as well. An X and Y projection are taken of thetaPhiHist and slantHist and added to a canvas. Each graph is edited, drawn, printed, and written to a root file. \\
+TODO:: PUT IN PICTURE SHOWING HOW SLANT DEPTH CALCULATED \\
+\textbf{Calculations:} \\
+
+
+\textbf{Plots:} \\
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{slantDepthTop.png}
+\end{figure}
+
+This plot describes the slant depth in an area around the Majorana demonstrator, which lies at (0,0).
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{polarAnglesTop.png}
+\end{figure}
+
+This plot describes the slant depth in an area around the Majorana demonstrator in polar angles theta and phi.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{polarAnglesTop2.png}
+\end{figure}
+
+This plot describes the slant depth in an area around the Majorana demonstrator in polar angles Cos(theta) and phi.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{axisProjections.png}
+\end{figure}
+
+X and Y axis projections for the slant depth and polar angles plots.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{Topology.png}
+\end{figure}
+
+The topology chart used to calculate the angles.
+
+\pagebreak
+\textbf{Uncertainty estimate:} \\
+TODO:: PUT IN UNCERTAINTY PICTURE
 
 \pagebreak
 

@@ -32,7 +32,8 @@ void landscape() {
 	Double_t xmaxRange = h->GetXaxis()->GetXmax();
 	Double_t yminRange = h->GetYaxis()->GetXmin();
 	Double_t ymaxRange = h->GetYaxis()->GetXmax();
-	TH2F *thetaPhiHist = new TH2F("thetaPhiHist","Calculated polar angles for topology",nbinx,0,93,nbiny,0,365);
+	//TH2F *thetaPhiHist = new TH2F("thetaPhiHist","Calculated polar angles for topology",180,0,360,nbinx,0,93);
+	TH2F *thetaPhiHist = new TH2F("thetaPhiHist","Calculated polar angles for topology",nbinx,0,93,nbiny,0,360);
 	TH2F *cosThetaPhiHist = new TH2F("cosThetaPhiHist","Calculated polar angles for topology",nbinx,0,1,nbiny,0,365);
 	TH2F *slantHist = new TH2F("slantHist","Calculated Slant depth for topology",nbinx,h->GetXaxis()->GetXmin(),h->GetXaxis()->GetXmax(),nbiny,h->GetYaxis()->GetXmin(),h->GetYaxis()->GetXmax());
 	
@@ -51,6 +52,9 @@ void landscape() {
 	
 	h->GetBinXYZ(binnum,MJDbinx,MJDbiny,MJDbinz);
 	cout << "MJDbinx: " << MJDbinx << " MJDbiny: " << MJDbiny << " MJDbinz: " << MJDbinz << endl;
+	
+	cout << "MJD bin center x: " << h->GetXaxis()->GetBinCenter(MJDbinx) << endl;
+	cout << "MJD bin center y: " << h->GetYaxis()->GetBinCenter(MJDbiny) << endl;
 	
 	//main loops -------------------------------------------------------
 	cout << "Press enter to draw graphs" << endl;
@@ -86,6 +90,7 @@ void landscape() {
 			}
 			
 			thetaPhiHist->Fill(theta*(180/PI),phi,r);
+			//thetaPhiHist->Fill(phi,theta*(180/PI),r);
 			theta = (cos(theta));
 			cosThetaPhiHist->Fill(theta,phi,r);
 			slantHist->SetBinContent(binnum,r);
@@ -118,18 +123,20 @@ void landscape() {
 	thetaPhiHist->SetYTitle("Phi");
 	thetaPhiHist->GetYaxis()->SetTitleOffset(1.3);
 	thetaPhiHist->Draw("colz");
+	//thetaPhiHist->Draw("polsurf");
 	
 		c2->cd();
 	//c2->SetLogz();
 	slantHist->SetStats(0);
 	slantHist->SetXTitle("Meters");
 	slantHist->SetYTitle("Meters");
-	slantHist->GetYaxis()->SetTitleOffset(1.3);
+	slantHist->GetYaxis()->SetTitleOffset(1.6);
 	slantHist->GetXaxis()->SetNoExponent(true);
 	slantHist->GetYaxis()->SetNoExponent(true);
 	slantHist->Draw("colz");
 	
 		c3->cd();
+	c3->SetLogz();
 	cosThetaPhiHist->SetStats(0);
 	cosThetaPhiHist->SetXTitle("Cos(Theta)");
 	cosThetaPhiHist->SetYTitle("Phi");
