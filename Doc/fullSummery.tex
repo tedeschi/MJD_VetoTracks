@@ -208,9 +208,11 @@ The hitFinder function is used to get a 3-D rotatable model of an individual eve
 \textbf{Landscape:} \\
 Using topological data, the landscape program generates two main plots of slant depth, one with Cartesian coordinates in meters, and the other with polar coordinates, named slantHist and thetaPhiHist, respectively. Two nested 'for' loops get the coordinates of the center of each bin of the topology chart. The height at each location is fetched, and phi, theta, and slant depth are calculated for each position.
 Phi is adjusted for each quadrant and the graphs are filled. The cosine of theta is taken and filled to a plot as well. An X and Y projection are taken of thetaPhiHist and slantHist and added to a canvas. Each graph is edited, drawn, printed, and written to a root file. \\
-TODO:: PUT IN PICTURE SHOWING HOW SLANT DEPTH CALCULATED \\
 \textbf{Calculations:} \\
 
+\begin{figure}[H]
+\makebox[\textwidth][c]{\includegraphics[width=1.6\textwidth]{surfCalc2.pdf}}%
+\end{figure}
 
 \textbf{Plots:} \\
 
@@ -251,7 +253,10 @@ The topology chart used to calculate the angles.
 
 \pagebreak
 \textbf{Uncertainty estimate:} \\
-TODO:: PUT IN UNCERTAINTY PICTURE
+
+\begin{figure}[H]
+\makebox[\textwidth][c]{\includegraphics[width=1.6\textwidth]{errorCalc.pdf}}%
+\end{figure}
 
 \pagebreak
 
