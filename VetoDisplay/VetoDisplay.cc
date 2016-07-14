@@ -821,6 +821,8 @@ void hitFinder(char* innum1, char* innum2) {
 	Int_t eventCount = 0;
 	Double_t scalerTime = 0.0;
 	Int_t qdcVals[32]={0};
+	Int_t numberOfPanelsHit = 0;
+	Int_t totalQDC = 0;
 	string line = "";
 	int lineLength = 0;
 	bool found = false;
@@ -899,7 +901,14 @@ void hitFinder(char* innum1, char* innum2) {
 				}
 			}
 			if(eventCount == inputnum2 && runNumber == inputnum1) {
-				DrawEvent(qdcVals, 0, 0, runNumber, eventCount);
+				for(int i = 0; i < 32; i++) {
+					if(qdcVals[i] != 0) {
+						numberOfPanelsHit++;
+						totalQDC += qdcVals[i];
+					}
+				}
+				DrawEvent(qdcVals, numberOfPanelsHit, totalQDC, runNumber, eventCount);
+				cout << "Press ctrl+C to exit" << endl;
 				found = true;
 				break;
 			}
