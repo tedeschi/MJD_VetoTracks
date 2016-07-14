@@ -21,6 +21,7 @@
 #include <TColor.h>
 #include <TStyle.h>
 
+#include "TProfile.h"
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
 #include "TGeoMedium.h"

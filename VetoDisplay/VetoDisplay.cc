@@ -830,7 +830,7 @@ void hitFinder(char* innum1, char* innum2) {
 	ifstream VetoHitsFile;
     VetoHitsFile.open(inputFile);
     
-	stringstream myStream(innum2);
+	stringstream myStream(innum1);
 	if (myStream >> inputnum1) {
 		inputnum1 = atoi(innum1);
 		validNum1 = true;
@@ -1073,22 +1073,22 @@ void drawPlots() {
 	graph2->GetYaxis()->SetTitleOffset(1.45);
 	graph2->SetFillColor(1);
     graph2->Draw("bar");
-    
-    graphs->cd(3);
+	
+	graphs->cd(3);
+	graph4->SetXTitle("Multiplicity");
+	graph4->SetYTitle("Total QDC");
+	graph4->SetMarkerStyle(kFullDotSmall);
+	graph4->GetYaxis()->SetTitleOffset(1.6);
+	graph4->SetStats(0);
+	graph4->Draw("colz");
+	
+	graphs->cd(4);
     graph3->SetYTitle("Panel number");
 	graph3->SetXTitle("QDC");
 	graph3->SetMarkerStyle(kFullDotSmall);
 	//gStyle->SetPalette(kBird);
 	graph3->SetStats(0);
     graph3->Draw("colz");
-	
-	graphs->cd(4);
-	graph4->SetXTitle("Multiplicity");
-	graph4->SetYTitle("Total QDC");
-	graph4->SetMarkerStyle(kFullDotSmall);
-	//graph4->GetYaxis()->SetTitleOffset(1.7);
-	graph4->SetStats(0);
-	graph4->Draw("colz");
     
     graphs->cd(5);
     graph5->SetYTitle("Panel number");
@@ -1157,7 +1157,7 @@ void drawPlots() {
 	projcan->cd(3);
 	countingMultProj->SetTitle("Multiplicity");
 	countingMultProj->SetYTitle("Count");
-	//countingMultProj->GetYaxis()->SetTitleOffset(1.7);
+	countingMultProj->GetYaxis()->SetTitleOffset(1.6);
 	countingMultProj->Draw("bar");
 	
 	projcan->cd(4);
@@ -1284,12 +1284,37 @@ void drawPlots() {
 	costhetaPhiprojx->Draw("bar");
 	
 	//QDC angle canvas
-	QDCanglecan->cd();
+	QDCanglecan->Divide(2,2);
+	
+	QDCanglecan->cd(1);
 	QDCangle->SetStats(0);
 	QDCangle->SetXTitle("Degrees Theta");
 	QDCangle->SetYTitle("QDC per panel");
 	QDCangle->GetYaxis()->SetTitleOffset(1.3);
 	QDCangle->Draw("colz");
+	
+	QDCanglecan->cd(2);
+	TH1D *QDCangleprojy = QDCangle->ProjectionY();
+	QDCangleprojy->SetTitle("Projection Y");
+	QDCangleprojy->SetYTitle("Count");
+	QDCangleprojy->Draw("hbar");
+	
+	QDCanglecan->cd(3);
+	TH1D *QDCangleprojx = QDCangle->ProjectionX();
+	QDCangleprojx->SetTitle("Projection X");
+	QDCangleprojx->SetYTitle("Count");
+	QDCangleprojx->Draw("bar");
+	
+	QDCanglecan->cd(4);
+	TProfile *QDCangleprofilex = QDCangle->ProfileX();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(1);
+	QDCangleprofilex->SetTitle("Profile X");
+	QDCangleprofilex->SetYTitle("QDC per panel");
+	QDCangleprofilex->GetYaxis()->SetTitleOffset(1.3);
+	QDCangleprofilex->GetYaxis()->SetRangeUser(0.,4000.);
+	QDCangleprofilex->Fit("pol1");
+	
 }
 
 void printPlots() {

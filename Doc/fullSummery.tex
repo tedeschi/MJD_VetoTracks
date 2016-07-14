@@ -3,6 +3,7 @@
 \usepackage{graphicx}
 \usepackage{courier}
 \usepackage{float}
+\usepackage{gensymb}
 \graphicspath{ {./} }
 \begin{document}
 
@@ -19,7 +20,7 @@ The goal of the Veto System analysis was to create plots and models visualizing 
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.5]{assembly95.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.0\textwidth]{assembly95.pdf}}%
 \end{figure}
 
 \pagebreak
@@ -63,7 +64,7 @@ Declared globally are canvases, each with their own theme, holding groups of plo
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{graphs.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{graphs.pdf}}%
 \end{figure}
 
 \textbf{\emph{Number of panels hit per event}:}  \\
@@ -72,11 +73,11 @@ This plot describes the total amount of panels hit per event. For each QDC value
 \textbf{\emph{Times each panel hit}:} \\
 This plot describes how many times each individual panel was hit. Filled by looping through the QDC values and adding any panel above 0 QDC.
 
-\textbf{\emph{QDC per panel for all hits}:} \\
-This plot describes how much QDC each panel received per event for every event. Filled by looping through the QDC values and adding any QDC value above 0 QDC.
-
 \textbf{\emph{Multiplicity vs QDC total}:} \\
 This plot describes how many panels were hit per event versus the total added QDC of that event. Filled with the numberOfPanelsHit and totalQDC variables.
+
+\textbf{\emph{QDC per panel for all hits}:} \\
+This plot describes how much QDC each panel received per event for every event. Filled by looping through the QDC values and adding any QDC value above 0 QDC.
 
 \textbf{\emph{QDC per panel for 2 panels hit}:} \\
 This plot describes the how much QDC each panel received per event for events with only two panels hit. Filled by looping through the QDC values and adding any QDC value and panel number above 0 QDC if it was a two panel event.
@@ -87,7 +88,7 @@ This plot describes how much QDC each panel received per event for events with o
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{Projections.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.0\textwidth]{Projections.pdf}}%
 \end{figure}
 
 \textbf{\emph{Panels hit vs Multiplicity}:} \\
@@ -105,7 +106,7 @@ This plot describes the total added QDC per event for all events. Filled with th
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{QDCtotal.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{QDCtotal.pdf}}%
 \end{figure}
 
 \textbf{\emph{QDC total for all hits}:} \\
@@ -120,7 +121,7 @@ This plot describes the total added QDC per event for events with only four pane
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{qdcDisplay.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{qdcDisplay.pdf}}%
 \end{figure}
 
 \textbf{\emph{QDC per panel for all hits}:} \\
@@ -144,7 +145,7 @@ An x-axis projection of \emph{QDC per panel for 4 panels hit} plot.
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{QDCtotaln.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{QDCtotaln.pdf}}%
 \end{figure}
 
 \textbf{\emph{QDC total for n panels hit}:} \\
@@ -153,7 +154,7 @@ These series of plots describe the total added QDC per event for each event with
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{thetaPhi.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{thetaPhi.pdf}}%
 \end{figure}
 
 \textbf{\emph{Theta vs. Phi for top and bottom n=4 layer hits}:} \\
@@ -168,7 +169,7 @@ An x-axis projection of \emph{Theta vs. Phi for top and bottom n=4 layer hits} p
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{cosThetaPhi.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{cosThetaPhi.pdf}}%
 \end{figure}
 
 \textbf{\emph{Cos(Theta) vs. Phi for top and bottom n=4 layer hits}:} \\
@@ -188,11 +189,11 @@ The input file should be delimited by spaces and in the form: \\
 \texttt{runNumber entry eventCount scalerTime QDCvaluePanel1 QDCvaluePanel2 ... QDCvaluePanel32} \\
 ex. \\
 \texttt{9959 14359 1037 3003.45 0 0 0 0 1283 0 0 1407 0 0 0 0 0 0 0 0 0 1556 0 0 0 968 0 0 0 0 0 0 0 0 0 0 } \\
-The program opens the input file and loops through each event. For an individual event, if the QDC value (stored in an array of size 32) is greater than 0, numberOfPanelsHit variable is incremented by 1, and the value is added to the totalQDC variable. Any missing panels (if less than 32 panels were given) are filled with a value of 0 QDC. With the necessary variables, drawEvent and fillPlots are called to draw the wireframe model and fill each plot with the event data. 
+The program opens the input file and loops through each event. Acceptable panel formats are 1-32 or 1-24, all others are not used. For an individual event, if the QDC value (stored in an array of size 32) is greater than 0, numberOfPanelsHit variable is incremented by 1, and the value is added to the totalQDC variable. Any missing panels (if less than 24 panels were given) are filled with a value of 0 QDC. With the necessary variables, drawEvent and fillPlots are called to draw the wireframe model and fill each plot with the event data. 
 
 After the program has looped through all the events, a heatmap of all the hits are drawn. This is accomplished by summing all the QDC values per panel for every event, multiplying it by a scale factor, and calling drawEvent one last time with the scaled values. The scale factor is denoted by: \\
 \texttt{scaleFactor = (MaxColorValue - MinColorValue) / (maxSumValue - minSumValue)} \\
-The heatmap is created as a PDF and the drawPlots and printPlots functions are called to generate and print the plots as a PDF file.
+The heatmap is created as a PDF and the drawPlots and printPlots functions are called to edit,draw, and print the plots as a PDF file.
 
 The 0-31 panel numbering format is used in all programming aspects, but is displayed on the text box and plots in the 1-32 format, to mitigate confusion.
 
@@ -207,52 +208,66 @@ The hitFinder function is used to get a 3-D rotatable model of an individual eve
 
 \textbf{Landscape:} \\
 Using topological data, the landscape program generates two main plots of slant depth, one with Cartesian coordinates in meters, and the other with polar coordinates, named slantHist and thetaPhiHist, respectively. Two nested 'for' loops get the coordinates of the center of each bin of the topology chart. The height at each location is fetched, and phi, theta, and slant depth are calculated for each position.
-Phi is adjusted for each quadrant and the graphs are filled. The cosine of theta is taken and filled to a plot as well. An X and Y projection are taken of thetaPhiHist and slantHist and added to a canvas. Each graph is edited, drawn, printed, and written to a root file. \\
+Phi is adjusted for each quadrant(due to taking the arctan) and the graphs are filled. The cosine of theta is taken and filled to a plot as well. An X and Y projection are taken of thetaPhiHist and slantHist and is added to a canvas. Each graph is edited, drawn, printed, and written to a root file. \\
 \textbf{Calculations:} \\
 
+$$surfDist=\sqrt{(xAtI)^{2}+(yAtI)^{2}}$$
+$$r=\sqrt{(xAtI)^{2}+(yAtI)^{2}+(heightAtI-(heightAt0-1478))^{2}}$$
+$$\theta=\sin^{-1}{(\frac{surfDist}{r})}$$
+$$\phi=\tan^{-1}{(\frac{yAtI}{xAtI})}$$
+
 \begin{figure}[H]
+\centering
 \makebox[\textwidth][c]{\includegraphics[width=1.6\textwidth]{surfCalc2.pdf}}%
 \end{figure}
 
+\pagebreak
 \textbf{Plots:} \\
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{slantDepthTop.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantDepthTop.png}}%
 \end{figure}
 
+\textbf{\emph{Calculated Slant depth for topology}:} \\
 This plot describes the slant depth in an area around the Majorana demonstrator, which lies at (0,0).
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{polarAnglesTop.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{polarAnglesTop.png}}%
 \end{figure}
 
+\textbf{\emph{Calculated polar angles for topology}:} \\
 This plot describes the slant depth in an area around the Majorana demonstrator in polar angles theta and phi.
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{polarAnglesTop2.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{polarAnglesTop2.png}}%
 \end{figure}
 
+\textbf{\emph{Calculated polar angles for topology}:} \\
 This plot describes the slant depth in an area around the Majorana demonstrator in polar angles Cos(theta) and phi.
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{axisProjections.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{axisProjections.png}}%
 \end{figure}
 
+\textbf{\emph{Polar angles Projections \& Slant Depth Projections}:} \\
 X and Y axis projections for the slant depth and polar angles plots.
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{Topology.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{Topology.png}}%
 \end{figure}
 
-The topology chart used to calculate the angles.
+\textbf{\emph{Landscape2}:} \\
+The topology chart used to calculate each angle.
 
 \pagebreak
 \textbf{Uncertainty estimate:} \\
+
+$$\Delta\theta=\tan^{-1}{(\frac{\sqrt{(\frac{30.8}{2})^{2}+(\frac{23.3}{2})^{2}}}{1478})}=\textbf{0.75\degree}$$
 
 \begin{figure}[H]
 \makebox[\textwidth][c]{\includegraphics[width=1.6\textwidth]{errorCalc.pdf}}%
