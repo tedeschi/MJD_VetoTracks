@@ -30,5 +30,7 @@
 #include "TApplication.h"
 #include "TGeoCompositeShape.h"
 
-int shooter(int r);
+Double_t shooter(Double_t r);
 void SlantDepth();
+void SlantDepth(char* innum1, char* innum2);
+Double_t SlantDepth(Double_t phiin, Double_t thetain);

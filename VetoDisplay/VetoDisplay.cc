@@ -9,6 +9,7 @@
 // (careful, dangourous command if used from any other directory)
 //-----------------------------------------------------------------------
 #include "VetoDisplay.hh"
+#include "../SlantDepth/SlantDepth.cc"
 
 using namespace std;
 
@@ -680,6 +681,10 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	
 		phi = t1.Phi()*(180/pi); //180/pi to get deg rather than rad
 		theta = t1.Theta()*(180/pi);
+		
+		if(phi < 0) {
+			phi += 360; //makes negative phi's the correct positive
+		}
 	
 		char phiout[150];
 		sprintf(phiout,"Phi: %.1f deg",phi); 
@@ -933,6 +938,10 @@ TCanvas *qdctotaln = new TCanvas("qdctotaln", "QDC totals for each n", 1000, 500
 TCanvas *thetaPhican = new TCanvas("thetaPhican","Theta and Phi of particle's tracks", 900, 0, 900, 600);
 TCanvas *costhetaPhican = new TCanvas("costhetaPhican","Cos(Theta) and Phi of particle's tracks", 900, 0, 900, 600);
 TCanvas *QDCanglecan = new TCanvas("QDCanglecan"," ", 1200, 800);
+TCanvas *QDCanglecan2 = new TCanvas("QDCanglecan2"," ", 1200, 800);
+TCanvas *QDCanglecan3 = new TCanvas("QDCanglecan3"," ", 1200, 800);
+TCanvas *QDCslantcan = new TCanvas("QDCslantcan"," ", 1600, 700);
+TCanvas *inThrucan = new TCanvas("inThrucan"," ", 1600, 700);
 
 TH1F *graph1 = new TH1F("graph1","Number of panels hit per event", 65, 0, 33);
 TH1F *graph2 = new TH1F("graph2","Times each panel hit", 65, 0, 33);
@@ -950,9 +959,17 @@ TH1F *graphn6 = new TH1F("graphn6","QDC total for 6 panels hit", 100, 0, 18000);
 TH1F *graphn7 = new TH1F("graphn7","QDC total for 7 panels hit", 100, 0, 18000);
 TH1F *graphn8 = new TH1F("graphn8","QDC total for 8 panels hit", 100, 0, 18000);
 TH1F *graphn9 = new TH1F("graphn9","QDC total for 9 panels hit", 100, 0, 18000);
-TH2F *thetaPhi = new TH2F("thetaPhi","Theta vs. Phi for top and bottom n=4 layer hits", 90, -185, 185, 90, -1, 50);
-TH2F *costhetaPhi = new TH2F("costhetaPhi","Cos(Theta) vs. Phi for top and bottom n=4 layer hits", 90, -185, 185, 90, 0, 1.3);
+TH2F *thetaPhi = new TH2F("thetaPhi","Theta vs. Phi for top and bottom n=4 layer hits", 90, 0, 360, 90, -1, 50);
+TH2F *costhetaPhi = new TH2F("costhetaPhi","Cos(Theta) vs. Phi for top and bottom n=4 layer hits", 90, 0, 360, 90, 0, 1.3);
 TH2F *QDCangle = new TH2F("QDCangle","QDC vs Theta for top and bottom n=4 layer hits", 180, 0, 45, 180, 0 , 4000);
+TH2F *QDCangle2 = new TH2F("QDCangle2","5-15 theta slice", 180, 5, 15, 180, 0 , 4000);
+TH2F *QDCangle3 = new TH2F("QDCangle3","15-20 theta slice", 180, 15, 22, 180, 0 , 4000);
+TH2F *QDCangle4 = new TH2F("QDCangle4","22-30 theta slice", 180, 22, 30, 180, 0 , 4000);
+TH2F *QDCangle5 = new TH2F("QDCangle5","30-45 theta slice", 180, 30, 45, 180, 0 , 4000);
+TH2F *QDCangle6 = new TH2F("QDCangle6","22-45 theta slice", 180, 22, 45, 180, 0 , 4000);
+TH2F *QDCslant = new TH2F("QDCslant","QDC vs Slant Depth for top and bottom n=4 layer hits", 100, 1200, 3000, 100, 0, 4000);
+TH2F *thetaSlant = new TH2F("thetaSlant","Theta vs Slant Depth for top and bottom n=4 layer hits",100, 1200, 3000, 100, 0, 45);
+TH2F *inThruHist = new TH2F("inThruHist","Inches particle passed through detector vs QDC val", 180, .95, 2, 180, 0, 4000);
 	
 //fills all plots and prints out wireframe pdfs
 void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t ievent) {
@@ -975,6 +992,18 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 			}
 			if(numOfPlanesHit <= 2 && numberOfPanelsHit == 4 && bottomSide == 2 && topSide == 2) { //top and bottom plane hits
 				QDCangle->Fill(theta, qdcvals[i]);
+				QDCangle2->Fill(theta, qdcvals[i]);
+				QDCangle3->Fill(theta, qdcvals[i]);
+				QDCangle4->Fill(theta, qdcvals[i]);
+				QDCangle5->Fill(theta, qdcvals[i]);
+				QDCangle6->Fill(theta, qdcvals[i]);
+				
+				Double_t inThru = 1 / cos(theta * (pi/180));
+				inThruHist->Fill(inThru, qdcvals[i]);
+				
+				Double_t slantDepth = SlantDepth(phi,theta);
+				thetaSlant->Fill(slantDepth, theta);
+				QDCslant->Fill(slantDepth, qdcvals[i]);
 			}
 		}
 	}
@@ -1044,8 +1073,7 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 			   qdcvals[topPanels[j]] != 0 && numberOfPanelsHit == 4 && filled == false) {
 				
 				thetaPhi->Fill(phi, theta);
-				Double_t costheta = theta / (180/pi);	
-				costheta = cos(costheta);
+				Double_t costheta = cos(theta / (180/pi));	
 				costhetaPhi->Fill(phi, costheta);
 				filled = true;
 			}
@@ -1292,6 +1320,8 @@ void drawPlots() {
 	costhetaPhiprojx->SetYTitle("Count");
 	costhetaPhiprojx->Draw("bar");
 	
+	
+	
 	//QDC angle canvas
 	QDCanglecan->Divide(2,2);
 	
@@ -1324,6 +1354,125 @@ void drawPlots() {
 	QDCangleprofilex->GetYaxis()->SetRangeUser(0.,4000.);
 	QDCangleprofilex->Fit("pol1");
 	
+	//qdcanglecan2
+	QDCanglecan2->Divide(3,2);
+	
+	QDCanglecan2->cd(1);
+	QDCangle->SetStats(0);
+	QDCangle->SetXTitle("Degrees Theta");
+	QDCangle->SetYTitle("QDC per panel");
+	QDCangle->GetYaxis()->SetTitleOffset(1.3);
+	QDCangle->Draw("colz");
+	
+	QDCanglecan2->cd(4);
+	TProfile *QDCangleprofilex2 = QDCangle->ProfileX();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(1);
+	QDCangleprofilex2->SetTitle("Profile X");
+	QDCangleprofilex2->SetYTitle("QDC per panel");
+	QDCangleprofilex2->GetYaxis()->SetTitleOffset(1.3);
+	QDCangleprofilex2->GetYaxis()->SetRangeUser(0.,4000.);
+	QDCangleprofilex2->Fit("pol1");
+	
+	QDCanglecan2->cd(2);
+	QDCangle2->Draw("colz");
+	
+	QDCanglecan2->cd(5);
+	TProfile *QDCangleprofilex3 = QDCangle2->ProfileX();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(1);
+	QDCangleprofilex3->SetTitle("Profile X");
+	QDCangleprofilex3->SetYTitle("QDC per panel");
+	QDCangleprofilex3->GetYaxis()->SetTitleOffset(1.3);
+	QDCangleprofilex3->GetYaxis()->SetRangeUser(0.,4000.);
+	QDCangleprofilex3->Fit("pol1");
+	
+	QDCanglecan2->cd(3);
+	QDCangle3->Draw("colz");
+
+	QDCanglecan2->cd(6);
+	TProfile *QDCangleprofilex4 = QDCangle3->ProfileX();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(1);
+	QDCangleprofilex4->SetTitle("Profile X");
+	QDCangleprofilex4->SetYTitle("QDC per panel");
+	QDCangleprofilex4->GetYaxis()->SetTitleOffset(1.3);
+	QDCangleprofilex4->GetYaxis()->SetRangeUser(0.,4000.);
+	QDCangleprofilex4->Fit("pol1");
+	
+	//qdcanglecan3
+	QDCanglecan3->Divide(3,2);
+	
+	QDCanglecan3->cd(1);
+	QDCangle4->Draw("colz");
+	
+	QDCanglecan3->cd(4);
+	TProfile *QDCangleprofilex5 = QDCangle4->ProfileX();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(1);
+	QDCangleprofilex5->SetTitle("Profile X");
+	QDCangleprofilex5->SetYTitle("QDC per panel");
+	QDCangleprofilex5->GetYaxis()->SetTitleOffset(1.3);
+	QDCangleprofilex5->GetYaxis()->SetRangeUser(0.,4000.);
+	QDCangleprofilex5->Fit("pol1");
+	
+	QDCanglecan3->cd(2);
+	QDCangle5->Draw("colz");
+	
+	QDCanglecan3->cd(5);
+	TProfile *QDCangleprofilex6 = QDCangle5->ProfileX();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(1);
+	QDCangleprofilex6->SetTitle("Profile X");
+	QDCangleprofilex6->SetYTitle("QDC per panel");
+	QDCangleprofilex6->GetYaxis()->SetTitleOffset(1.3);
+	QDCangleprofilex6->GetYaxis()->SetRangeUser(0.,4000.);
+	QDCangleprofilex6->Fit("pol1");
+	
+	QDCanglecan3->cd(3);
+	QDCangle6->Draw("colz");
+	
+	QDCanglecan3->cd(6);
+	TProfile *QDCangleprofilex7 = QDCangle6->ProfileX();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(1);
+	QDCangleprofilex7->SetTitle("Profile X");
+	QDCangleprofilex7->SetYTitle("QDC per panel");
+	QDCangleprofilex7->GetYaxis()->SetTitleOffset(1.3);
+	QDCangleprofilex7->GetYaxis()->SetRangeUser(0.,4000.);
+	QDCangleprofilex7->Fit("pol1");
+	
+	//drawing QDCslantcan
+	QDCslantcan->Divide(2,1);
+	
+	QDCslantcan->cd(1);
+	QDCslant->SetYTitle("QDC per panel");
+	QDCslant->GetYaxis()->SetTitleOffset(1.45);
+	QDCslant->SetXTitle("Slant Depth(meters)");
+	QDCslant->Draw("colz");
+	
+	QDCslantcan->cd(2);
+	thetaSlant->SetYTitle("Degrees theta");
+	thetaSlant->SetXTitle("Slant Depth(meters)");
+	thetaSlant->Draw("colz");
+	
+	//drawing inThrucan
+	inThrucan->Divide(2,1);
+	
+	inThrucan->cd(1);
+	inThruHist->SetXTitle("Inches");
+	inThruHist->SetYTitle("QDC per panel");
+	inThruHist->Draw("colz");
+	
+	inThrucan->cd(2);
+	TProfile *inThruHistprofilex = inThruHist->ProfileX();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(1);
+	inThruHistprofilex->SetTitle("Profile X");
+	inThruHistprofilex->SetYTitle("QDC per panel");
+	inThruHistprofilex->GetYaxis()->SetTitleOffset(1.3);
+	inThruHistprofilex->GetYaxis()->SetRangeUser(0.,4000.);
+	inThruHistprofilex->Fit("pol1");
 }
 
 void printPlots() {
@@ -1358,14 +1507,28 @@ void printPlots() {
 	char QDCanglecanprint[150];
 		sprintf(QDCanglecanprint,"output/plots/QDCangle.pdf");
 		QDCanglecan->Print(QDCanglecanprint,"pdf");
+		
+	char QDCslantcanprint[150];
+		sprintf(QDCslantcanprint,"output/plots/QDCslant.pdf");
+		QDCslantcan->Print(QDCslantcanprint,"pdf");
+		
+	char QDCanglecan2print[150];
+		sprintf(QDCanglecan2print,"output/plots/QDCangle2.pdf");
+		QDCanglecan2->Print(QDCanglecan2print,"pdf");
+		
+	char QDCanglecan3print[150];
+		sprintf(QDCanglecan3print,"output/plots/QDCangle3.pdf");
+		QDCanglecan3->Print(QDCanglecan3print,"pdf");
+		
+	char inThrucanprint[150];
+		sprintf(inThrucanprint,"output/plots/inThru.pdf");
+		inThrucan->Print(inThrucanprint,"pdf");
 }
 //--------------------------------------------------------------
 
 void VetoDisplay()
 {
-
 	Int_t ievent = 0;
-
 	Int_t runNumber = 0;
 	Int_t entry = 0;
 	Int_t eventCount = 0;

@@ -88,6 +88,11 @@ void landscape() {
 				phi = abs(phi)+270;
 			}
 			
+			if((theta*(180/PI) > 44) && (theta*(180/PI) < 45)) {
+				cout << "r: " << r << endl;
+				cout << h->GetBinContent(binnum) << endl;
+				cout << surfDist << endl;
+			}
 			thetaPhiHist->Fill(theta*(180/PI),phi,r);
 			theta = (cos(theta));
 			cosThetaPhiHist->Fill(theta,phi,r);

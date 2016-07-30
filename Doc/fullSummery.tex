@@ -16,7 +16,7 @@ Bradley McClain and Dr. David Tedeschi, University of South Carolina
 \pagebreak
 
 \textbf{Summary:} \\
-The goal of the Veto System analysis was to create plots and models visualizing the output of the 32 Veto detectors using Cern's Root. A stand alone program compiling with Root and MGDO libraries creates an executable file that can be run from the command line. Executing this file with detector data produces PDF files depicting the Veto panels with realistic geometry, lighting up the panels that were hit with different colors based on received QDC with each individual event. If two layers of panels are hit at the same time, a track of the particle is drawn and it's coordinates of the vector are given. Alongside the wireframe, the program creates plots of the event data with things such as number of panels hit per event, how many times each individual panel was hit, and more. Individual events can be displayed in a rotatable 3-D model.
+The goal of the Veto System analysis was to create plots and models visualizing the output of the 32 Veto detectors using Cern's Root. A stand alone program compiling with Root and MGDO libraries creates an executable file that can be run from the command line. Executing this file with detector data produces PDF files depicting the Veto panels with realistic geometry, lighting up the panels that were hit with different colors based on received QDC with each individual event. If two layers of panels are hit at the same time, a track of the particle is drawn and it's coordinates of the vector are given. Alongside the wireframe, the program creates plots of the event data with things such as number of panels hit per event, how many times each individual panel was hit, and more. Individual events can be displayed in a rotatable 3-D model. The program can also calculate the slant depth of a particle's path using topological data of an area around the MJD experiment.
 
 \begin{figure}[h]
 \centering
@@ -206,19 +206,22 @@ The hitLocation function is used for getting the location of a layer hit in the 
 
 The hitFinder function is used to get a 3-D rotatable model of an individual event. The function opens with Root's TApplication classes. A canvas is drawn after the run number and event count is found, and is automatically put on the TApplication window. Finally, the application is run. To access the hitFinder function, run the executable with ./VetoDisplay runNumber eventCount \\
 
-\textbf{Landscape:} \\
-Using topological data, the landscape program generates two main plots of slant depth, one with Cartesian coordinates in meters, and the other with polar coordinates, named slantHist and thetaPhiHist, respectively. Two nested 'for' loops get the coordinates of the center of each bin of the topology chart. The height at each location is fetched, and phi, theta, and slant depth are calculated for each position.
-Phi is adjusted for each quadrant(due to taking the arctan) and the graphs are filled. The cosine of theta is taken and filled to a plot as well. An X and Y projection are taken of thetaPhiHist and slantHist and is added to a canvas. Each graph is edited, drawn, printed, and written to a root file. \\
+\textbf{Slant Depth:} \\
+Using topological data, the SlantDepth program allows one to input the phi and theta of a particle's path and get out the distance the particle traveled through the ground. The program can also generate a histogram of the slant depth in the area surrounding the MJD experiment. The slant depth is calculated using a "shooting" method. First, an initial value of r(slant depth) is assumed. With the polar coordinates given, x, y, and z Cartesian coordinates are calculated at the tip of the r vector, with it's initial point being the MJD location. If the vector is below the surface, a $\Delta$r is added to the assumed value of r. If the vector is above the surface, a $\Delta$r is subtracted from the assumed value of r. When the vector passes through the surface, the $\Delta$r is halved. r is added and subtracted from until it is within $\epsilon$1m of the surface. When going from one bin to another, the surface height has an abrupt jump, so when the vector is within $\epsilon$10m of the surface and near a bin edge, a line is drawn from the center of the two bins. The new line becomes the assumed surface height. Three histograms are made in the ranges of 0-90 theta, 0-60 theta, and 60-90 theta. They are edited, drawn, written to a root file, and finally printed. \\
 \textbf{Calculations:} \\
 
-$$surfDist=\sqrt{(xAtI)^{2}+(yAtI)^{2}}$$
-$$r=\sqrt{(xAtI)^{2}+(yAtI)^{2}+(heightAtI-(heightAt0-1478))^{2}}$$
-$$\theta=\sin^{-1}{(\frac{surfDist}{r})}$$
-$$\phi=\tan^{-1}{(\frac{yAtI}{xAtI})}$$
+$$xAtrTip=cos(Phi) * sin(Theta) * r$$
+$$yAtrTip=sin(Phi) * sin(Theta) * r$$
+$$zAtrTip=(heightAt0 - MJDDEPTH) + r*cos(Theta)$$
 
 \begin{figure}[H]
 \centering
-\makebox[\textwidth][c]{\includegraphics[width=1.6\textwidth]{surfCalc2.pdf}}%
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantDepthFig.pdf}}%
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{freeform_thetaphi3.pdf}}%
 \end{figure}
 
 \pagebreak
@@ -226,54 +229,17 @@ $$\phi=\tan^{-1}{(\frac{yAtI}{xAtI})}$$
 
 \begin{figure}[H]
 \centering
-\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantDepthTop.png}}%
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantHist.png}}%
 \end{figure}
-
-\textbf{\emph{Calculated Slant depth for topology}:} \\
-This plot describes the slant depth in an area around the Majorana demonstrator, which lies at (0,0).
 
 \begin{figure}[H]
 \centering
-\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{polarAnglesTop.png}}%
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantLowTheta.png}}%
 \end{figure}
-
-\textbf{\emph{Calculated polar angles for topology}:} \\
-This plot describes the slant depth in an area around the Majorana demonstrator in polar angles theta and phi.
 
 \begin{figure}[H]
 \centering
-\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{polarAnglesTop2.png}}%
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantHighTheta.png}}%
 \end{figure}
-
-\textbf{\emph{Calculated polar angles for topology}:} \\
-This plot describes the slant depth in an area around the Majorana demonstrator in polar angles Cos(theta) and phi.
-
-\begin{figure}[H]
-\centering
-\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{axisProjections.png}}%
-\end{figure}
-
-\textbf{\emph{Polar angles Projections \& Slant Depth Projections}:} \\
-X and Y axis projections for the slant depth and polar angles plots.
-
-\begin{figure}[H]
-\centering
-\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{Topology.png}}%
-\end{figure}
-
-\textbf{\emph{Landscape2}:} \\
-The topology chart used to calculate each angle.
-
-\pagebreak
-\textbf{Uncertainty estimate:} \\
-
-$$\Delta\theta=\tan^{-1}{(\frac{\sqrt{(\frac{30.8}{2})^{2}+(\frac{23.3}{2})^{2}}}{1478})}=\textbf{0.75\degree}$$
-
-\begin{figure}[H]
-\makebox[\textwidth][c]{\includegraphics[width=1.6\textwidth]{errorCalc.pdf}}%
-\end{figure}
-
-\pagebreak
-
 
 \end{document}
