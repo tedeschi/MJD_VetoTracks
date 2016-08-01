@@ -67,35 +67,35 @@ void SlantDepth() {
 	}
 
 	//filling 0-60 theta histo -----------------------------------------
-	for(double i = 0; i < 360; i+=0.5) {
-		for(double j = 0; j < 60; j+=0.5) {
-			slantPhi = (i+90) * (PI/180);
-			slantTheta = j * (PI/180);
+	for(double counteri1 = 0; counteri1 < 360; counteri1+=0.5) {
+		for(double counterj1 = 0; counterj1 < 60; counterj1+=0.5) {
+			slantPhi = (counteri1+90) * (PI/180);
+			slantTheta = counterj1 * (PI/180);
 			r = 1478.0;
 			deltar = 10;
 			diffNew = 0.0;
 			diffOld = 0.0;
 			counter = 0;
-			slantLowTheta->Fill(i,j,shooter(r));
+			slantLowTheta->Fill(counteri1,counterj1,shooter(r));
 		}
-		cout << i << endl;
+		cout << counteri1 << endl;
 	}
 	
 	
 	
 	//filling 60-90 theta histo ----------------------------------------
-	for(double i = 0; i < 360; i+=0.5) {
-		for(double j = 60; j < 90; j+=0.5) {
-			slantPhi = (i+90) * (PI/180);
-			slantTheta = j * (PI/180);
+	for(double counteri2 = 0; counteri2 < 360; counteri2+=0.5) {
+		for(double counterj2 = 60; counterj2 < 90; counterj2+=0.5) {
+			slantPhi = (counteri2+90) * (PI/180);
+			slantTheta = counterj2 * (PI/180);
 			r = 1478.0;
 			deltar = 10;
 			diffNew = 0.0;
 			diffOld = 0.0;
 			counter = 0;
-			slantHighTheta->Fill(i,j,shooter(r));
+			slantHighTheta->Fill(counteri2,counterj2,shooter(r));
 		}
-		cout << i << endl;
+		cout << counteri2 << endl;
 	}
 	//editing,writing, and drawing histos ------------------------------
 	TCanvas *c1 = new TCanvas("c1","c1",1200,800);
