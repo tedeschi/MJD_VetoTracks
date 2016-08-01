@@ -940,7 +940,7 @@ TCanvas *costhetaPhican = new TCanvas("costhetaPhican","Cos(Theta) and Phi of pa
 TCanvas *QDCanglecan = new TCanvas("QDCanglecan"," ", 1200, 800);
 TCanvas *QDCanglecan2 = new TCanvas("QDCanglecan2"," ", 1200, 800);
 TCanvas *QDCanglecan3 = new TCanvas("QDCanglecan3"," ", 1200, 800);
-TCanvas *QDCslantcan = new TCanvas("QDCslantcan"," ", 1600, 700);
+TCanvas *QDCslantcan = new TCanvas("QDCslantcan"," ", 1200, 800);
 TCanvas *inThrucan = new TCanvas("inThrucan"," ", 1600, 700);
 
 TH1F *graph1 = new TH1F("graph1","Number of panels hit per event", 65, 0, 33);
@@ -963,10 +963,10 @@ TH2F *thetaPhi = new TH2F("thetaPhi","Theta vs. Phi for top and bottom n=4 layer
 TH2F *costhetaPhi = new TH2F("costhetaPhi","Cos(Theta) vs. Phi for top and bottom n=4 layer hits", 90, 0, 360, 90, 0, 1.3);
 TH2F *QDCangle = new TH2F("QDCangle","QDC vs Theta for top and bottom n=4 layer hits", 180, 0, 45, 180, 0 , 4000);
 TH2F *QDCangle2 = new TH2F("QDCangle2","5-15 theta slice", 180, 5, 15, 180, 0 , 4000);
-TH2F *QDCangle3 = new TH2F("QDCangle3","15-20 theta slice", 180, 15, 22, 180, 0 , 4000);
+TH2F *QDCangle3 = new TH2F("QDCangle3","15-22 theta slice", 180, 15, 22, 180, 0 , 4000);
 TH2F *QDCangle4 = new TH2F("QDCangle4","22-30 theta slice", 180, 22, 30, 180, 0 , 4000);
 TH2F *QDCangle5 = new TH2F("QDCangle5","30-45 theta slice", 180, 30, 45, 180, 0 , 4000);
-TH2F *QDCangle6 = new TH2F("QDCangle6","22-45 theta slice", 180, 22, 45, 180, 0 , 4000);
+TH2F *QDCangle6 = new TH2F("QDCangle6","5-45 theta slice", 180, 5, 45, 180, 0 , 4000);
 TH2F *QDCslant = new TH2F("QDCslant","QDC vs Slant Depth for top and bottom n=4 layer hits", 100, 1200, 3000, 100, 0, 4000);
 TH2F *thetaSlant = new TH2F("thetaSlant","Theta vs Slant Depth for top and bottom n=4 layer hits",100, 1200, 3000, 100, 0, 45);
 TH2F *inThruHist = new TH2F("inThruHist","Inches particle passed through detector vs QDC val", 180, .95, 2, 180, 0, 4000);
@@ -1443,7 +1443,7 @@ void drawPlots() {
 	QDCangleprofilex7->Fit("pol1");
 	
 	//drawing QDCslantcan
-	QDCslantcan->Divide(2,1);
+	QDCslantcan->Divide(2,2);
 	
 	QDCslantcan->cd(1);
 	QDCslant->SetYTitle("QDC per panel");
@@ -1455,6 +1455,16 @@ void drawPlots() {
 	thetaSlant->SetYTitle("Degrees theta");
 	thetaSlant->SetXTitle("Slant Depth(meters)");
 	thetaSlant->Draw("colz");
+	
+	QDCslantcan->cd(3);
+	TProfile *QDCslantcanprofilex = QDCslant->ProfileX();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(1);
+	QDCslantcanprofilex->SetTitle("Profile X");
+	QDCslantcanprofilex->SetYTitle("QDC per panel");
+	QDCslantcanprofilex->GetYaxis()->SetTitleOffset(1.3);
+	QDCslantcanprofilex->GetYaxis()->SetRangeUser(0.,4000.);
+	QDCslantcanprofilex->Fit("pol1");
 	
 	//drawing inThrucan
 	inThrucan->Divide(2,1);
