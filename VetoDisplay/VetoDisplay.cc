@@ -114,14 +114,47 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
    
 	// declare panels
 	TGeoVolume *panel[32];
-
+	
+	//east side lengths
+	Double_t eastxlayerouter = 172.72 / 2;
+	Double_t eastxlayerinner = 176.53 / 2;
+	Double_t eastylayer = 168.91 / 2;
+	Double_t eastHalfOverlapOuter = 15.39 / 2;
+	Double_t eastHalfOverlapInner = 10.01 / 2;
+	
+	//south side lengths
+	Double_t southxlayerouter = 172.72 / 2;
+	Double_t southxlayerinner = 176.53 / 2;
+	Double_t southylayer = 212.09 / 2;
+	Double_t southHalfOverlapOuter = 24.28 / 2;
+	Double_t southHalfOverlapInner = 1.12 / 2;
+	
+	//north side lengths
+	Double_t northxlayerouter = 165.1 / 2;
+	Double_t northxlayerinner = 170.82 / 2;
+	Double_t northylayer = 203.86 / 2;
+	Double_t halfAmountOfOverlap = 5.08 / 2; 
+	
+	//west side lengths
+	Double_t westxlayerouter = 165.10 / 2;
+	Double_t westxlayerinner = 170.82 / 2;
+	Double_t westylayer = 168.91 / 2;
+	
+	//top lengths
+	Double_t topxlayerupper = 168.91 / 2;
+	Double_t topylayerupper = 205.74 / 2;
+	Double_t topxlayerlower = 212.09 / 2;
+	Double_t topylayerlower = 168.91 / 2;
+	
+	Double_t zlayer = 2.54 / 2;
+	Double_t xpanel = 0.0;
+	Double_t ypanel = 0.0;    
+	Double_t zpanel = 0.0;
+	
 	// bottom veto panels-------------------------------------------------------------
 	// make box for each layer and fill with 6 panels
 	// panel 0-5  lower bottom
 	// panel 6-11 upper bottom
-	// measurements taken from Dr. David Tedeschi on site and
-	// Majorana_MuonFluxV21.pdf
-	// The southwest side was chosen to be the 'most correct' in terms of offset
 	Double_t bottomDetectorWidth = 32.0; //total width of a bottom panel detector
 	Double_t totalBottomHeight = 43.18; //upper + lower bottom panel height together
 	Double_t spaceBetweenDetectorsy = 2.54; //from detector edge to next detector edge in the y axis
@@ -129,12 +162,12 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	
 	Double_t xlayer1 = 182.0 / 2; //length of lower bottom detectors in cm
 	Double_t xlayer2 = 223.0 / 2; //length of upper bottom detectors in cm
-	Double_t ylayer1 = ((bottomDetectorWidth * 6) + (spaceBetweenDetectorsy * 6)) / 2; // = 207.24/2
-	Double_t zplace = (203.29) / 2; //where to place the bottom panels on the z axis(hieght of upper panels)
-	Double_t upperoffsetx = (zplace - xlayer2 - spaceBetweenDetectorsy/2) + (1.93 / 2); //the offset of the upper bottom panels in x axis
-	Double_t loweroffsetx = (zplace - xlayer1 - spaceBetweenDetectorsy/2) + (13.627 / 2); //the offset of the lower bottom panels in x axis
-	Double_t upperoffsety = (zplace - ylayer1) + (13.597 / 2); //the offset of the upper bottom panels in y axis
-	Double_t loweroffsety = (zplace - ylayer1) - (1.27 / 2); //the offset of the lower bottom panels in the y axis
+	Double_t ylayer1 = ((bottomDetectorWidth * 6) + (spaceBetweenDetectorsy * 6)) / 2;
+	Double_t zplace = (eastxlayerouter); //where to place the bottom panels on the z axis(hieght of upper panels)
+	Double_t upperoffsetx = (southylayer - xlayer2 - spaceBetweenDetectorsy/2) - 1.93; //the offset of the upper bottom panels in x axis
+	Double_t loweroffsetx = (eastylayer-2*zlayer - xlayer1 - spaceBetweenDetectorsy/2) + 13.63; //the offset of the lower bottom panels in x axis
+	Double_t upperoffsety = (eastylayer-2*zlayer - ylayer1) + 13.96; //the offset of the upper bottom panels in y axis
+	Double_t loweroffsety = (southylayer - ylayer1) - 1.27; //the offset of the lower bottom panels in the y axis
 	Double_t zlayer1 = totalBottomHeight / 4;
 	
 	// we start with the bottom outside boxes
@@ -171,7 +204,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	TGeoVolume *layerbi1 = geom->MakeBox("layerbi1", Vacuum, xlayer2,ylayer1,zlayer1); // bottom upper inner 
 	TGeoVolume *layerbi2 = geom->MakeBox("layerbi2", Vacuum, xlayer1,ylayer1,zlayer1); // bottom lower inner
 
-	// put 6 panels in layer 1
+	// put 6 panels in layer 2
 	Double_t xpanel2 = xlayer2;
 	Double_t ypanel2 = bottomDetectorWidth/2;
 	Double_t zpanel2 = zlayer1-spaceBetweenDetectorsy/2;
@@ -201,154 +234,41 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	// top veto panels-------------------------------------------------------------
 	// panel 17,18 top outer
 	// panel 20,21 top inner   
-	Double_t topxlayer = 203.29 / 2;
-	Double_t topylayer = 203.29 / 2;
-	Double_t zlayer = 2.54 / 2;
 	
-	Double_t xpanel = topxlayer;
-	Double_t ypanel = topylayer/6.;    
-	Double_t zpanel = zlayer;
-	
-	TGeoVolume *layert1 = geom->MakeBox("layert1", Vacuum, topxlayer,topylayer,zlayer);   
-	TGeoVolume *layert2 = geom->MakeBox("layert2", Vacuum, topxlayer,topylayer,zlayer);   
-	ypanel = topylayer/2.;    
+	TGeoVolume *layert1 = geom->MakeBox("layert1", Vacuum, topxlayerupper,topylayerupper,zlayer);   
+	TGeoVolume *layert2 = geom->MakeBox("layert2", Vacuum, topxlayerlower,topylayerlower,zlayer);   
 
 	for (Int_t i=0; i<2;i++){
+		xpanel = topxlayerupper;
+		ypanel = topylayerupper/2.;    
+		zpanel = zlayer;
+	
 	    sprintf(panel_name,"panel%d",i);
 	    panel[17+i]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel,zpanel);
-	    ypos = -topylayer+(2*i+1)*ypanel;  
+	    ypos = -topylayerupper+(2*i+1)*ypanel;  
 	    layert1->AddNode(panel[17+i],i, new TGeoTranslation(0,ypos,0));
 	    mcscoords[17+i][0] = 0;
 	    mcscoords[17+i][1] = ypos;
-	    mcscoords[17+i][2] = topxlayer;
+	    mcscoords[17+i][2] = topxlayerupper;
+
+		
+		xpanel = topxlayerlower;
+		ypanel = topylayerlower/2.;
+		zpanel = zlayer;
 
 	    sprintf(panel_name,"panel%d",i);
 	    panel[20+i]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel,zpanel);
-	    ypos = -topylayer+(2*i+1)*ypanel;  
+	    ypos = -topylayerlower+(2*i+1)*ypanel;  
 	    layert2->AddNode(panel[20+i],i, new TGeoTranslation(0,ypos,0));
 	    mcscoords[20+i][0] = ypos;
 	    mcscoords[20+i][1] = 0;
-	    mcscoords[20+i][2] = topxlayer;
+	    mcscoords[20+i][2] = topxlayerlower;
   	}
   	// add top layers to mother
-  	top->AddNode(layert1,1, new TGeoTranslation(0,0,topxlayer-zlayer + 4*zlayer));
+  	top->AddNode(layert1,1, new TGeoTranslation(2*zlayer,0,northxlayerinner+3*zlayer -(westxlayerouter-westxlayerinner) -(eastxlayerouter-westxlayerouter)));
   	TGeoRotation *rot2 = new TGeoRotation();
   	rot2->RotateZ(-90);  
-  	top->AddNode(layert2,2, new TGeoCombiTrans(0,0,topxlayer-(3*zlayer) + 4*zlayer,rot2));
-
-	// north veto panels-------------------------------------------------------------
-	// panel 15,16 north outer
-	// panel 19,23 north inner
-	
-	Double_t northxlayer = 203.29 / 2;
-	Double_t northylayer = 203.29 / 2;
-	Double_t halfHoleLength = 50 / 6; //dont have actual dimensions for yet, currently length of cryovats
-	
-	TGeoVolume *layern1 = geom->MakeBox("layern1", Vacuum, northxlayer,northylayer,zlayer);   
-	TGeoVolume *layern2 = geom->MakeBox("layern2", Vacuum, northxlayer,northylayer,zlayer);   
-
-	xpanel = northxlayer;    
-	ypanel = northylayer/2.;    
-
-	// 15
-	sprintf(panel_name,"panel%d",15);
-	panel[15]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-halfHoleLength,zpanel);
-	ypos = -northylayer+(2*0+1)*ypanel;  
-	layern1->AddNode(panel[15],15, new TGeoTranslation(0,ypos,0));
-	mcscoords[15][0] = northxlayer;
-	mcscoords[15][1] = ypos;
-	mcscoords[15][2] = 0;
-	
-	//16
-	sprintf(panel_name,"panel%d",16);
-	panel[16]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+halfHoleLength,zpanel);
-	ypos = -northylayer+(2*1+1)*ypanel;  
-	layern1->AddNode(panel[16],16, new TGeoTranslation(0,ypos,0));
-	mcscoords[16][0] = northxlayer;
-	mcscoords[16][1] = ypos;
-	mcscoords[16][2] = 0;
-	    
-	//19
-	sprintf(panel_name,"panel%d",19);
-	panel[19]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+halfHoleLength,zpanel);
-	ypos = -northylayer+(2*0+1)*ypanel;  
-	layern2->AddNode(panel[19],19, new TGeoTranslation(0,ypos,0));
-	mcscoords[19][0] = northxlayer;
-	mcscoords[19][1] = ypos;
-	mcscoords[19][2] = 0;
-	//23
-	sprintf(panel_name,"panel%d",23);
-	panel[23]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-halfHoleLength,zpanel);
-	ypos = -northylayer+(2*1+1)*ypanel;  
-	layern2->AddNode(panel[23],23, new TGeoTranslation(0,ypos,0));
-	mcscoords[23][0] = northxlayer;
-	mcscoords[23][1] = ypos;
-	mcscoords[23][2] = 0;
-
-	// add north layers to mother
-	TGeoRotation *rot3 = new TGeoRotation();
-	rot3->RotateY(90);   
-	top->AddNode(layern1,1, new TGeoCombiTrans(northxlayer-zlayer,-halfHoleLength,0,rot3));
-	top->AddNode(layern2,2, new TGeoCombiTrans(northxlayer-3*zlayer,halfHoleLength,0,rot3));
-
-	// west veto panels-------------------------------------------------------------
-	// panel 12,13 west inner
-	// panel 14,22 west outer
-	//switch role of x and y to get panel shape
- 
-	Double_t westxlayer = 203.29 / 2;
-	Double_t westylayer = 203.29 / 2;
-	 
-	TGeoVolume *layerw1 = geom->MakeBox("layerw1", Vacuum, westxlayer,westylayer,zlayer);   
-	TGeoVolume *layerw2 = geom->MakeBox("layerw2", Vacuum, westxlayer,westylayer,zlayer);
-
-	xpanel = westxlayer;    
-	ypanel = (westylayer-2*zlayer)/2.;
-
-	// 12
-	sprintf(panel_name,"panel%d",12);
-	panel[12]= geom->MakeBox(panel_name, Vacuum, ypanel+halfHoleLength,xpanel,zpanel);
-	ypos = -westylayer+(2*0+1)*ypanel;  
-	layerw1->AddNode(panel[12],12, new TGeoTranslation(ypos,0,0));
-	mcscoords[12][0] = ypos;
-	mcscoords[12][1] = westxlayer;
-	mcscoords[12][2] = 0;
-	
-	//13
-	sprintf(panel_name,"panel%d",13);
-	panel[13]= geom->MakeBox(panel_name, Vacuum, ypanel-halfHoleLength,xpanel,zpanel);
-	ypos = -westylayer+(2*1+1)*ypanel;  
-	layerw1->AddNode(panel[13],13, new TGeoTranslation(ypos,0,0));
-	mcscoords[13][0] = ypos;
-	mcscoords[13][1] = westxlayer;
-	mcscoords[13][2] = 0;
-	
-	//22
-	sprintf(panel_name,"panel%d",22);
-	panel[22]= geom->MakeBox(panel_name, Vacuum, ypanel-halfHoleLength,xpanel,zpanel);
-	ypos = -westylayer+(2*0+1)*ypanel;  
-	layerw2->AddNode(panel[22],22, new TGeoTranslation(ypos,0,0));
-	mcscoords[22][0] = ypos;
-	mcscoords[22][1] = westxlayer;
-	mcscoords[22][2] = 0;
-	
-	//14
-	sprintf(panel_name,"panel%d",14);
-	panel[14]= geom->MakeBox(panel_name, Vacuum, ypanel+halfHoleLength,xpanel,zpanel);
-	ypos = -westylayer+(2*1+1)*ypanel;  
-	layerw2->AddNode(panel[14],14, new TGeoTranslation(ypos,0,0));
-	mcscoords[14][0] = ypos;
-	mcscoords[14][1] = westxlayer;
-	mcscoords[14][2] = 0;
-
-	// add west layers to mother
-	TGeoRotation *rot4 = new TGeoRotation();
-	rot4->RotateX(90);   
-	top->AddNode(layerw2,1, new TGeoCombiTrans(-halfHoleLength,westylayer-zlayer,0,rot4));
-	top->AddNode(layerw1,2, new TGeoCombiTrans(halfHoleLength,westylayer-3*zlayer,0,rot4));
-
-
-	///////////////////////// NEW ADDITIONS
+  	top->AddNode(layert2,2, new TGeoCombiTrans(2*zlayer,0,northxlayerinner+zlayer -(westxlayerouter-westxlayerinner) -(eastxlayerouter-westxlayerouter),rot2));
 
 	// EAST veto panels-------------------------------------------------------------
 	// panel 28,30 EAST inner
@@ -357,136 +277,245 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	// Z-axis points toward TOP
 	// Y-axis points toward EAST
 	// X-axis points toward NORTH
-	
-	Double_t eastxlayer = 203.29 / 2;
-	Double_t eastylayer = 203.29 / 2;
 
-	TGeoVolume *layerE1 = geom->MakeBox("layerE1", Vacuum, eastxlayer,eastylayer,zlayer);   
-	TGeoVolume *layerE2 = geom->MakeBox("layerE2", Vacuum, eastxlayer,eastylayer,zlayer);   
-	xpanel = eastxlayer;    
-	ypanel = (eastylayer-2*zlayer)/2.; 
-
-	//28
-	sprintf(panel_name,"panel%d",28);
-	panel[28]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+halfHoleLength,zpanel);
-	ypos = -eastylayer+(2*0+1)*ypanel;  
-	layerE1->AddNode(panel[28],28, new TGeoTranslation(0,ypos,0));
-	mcscoords[28][0] = ypos;
-	mcscoords[28][1] = -eastylayer;
-	mcscoords[28][2] = 0;
-
-	//30
-	sprintf(panel_name,"panel%d",30);
-	panel[30]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-halfHoleLength,zpanel);
-	ypos = -eastylayer+(2*1+1)*ypanel;  
-	layerE1->AddNode(panel[30],30, new TGeoTranslation(0,ypos,0));
-	mcscoords[30][0] = ypos;
-	mcscoords[30][1] = -eastylayer;
-	mcscoords[30][2] = 0;
+	TGeoVolume *layerE1 = geom->MakeBox("layerE1", Vacuum, eastxlayerouter,eastylayer,zlayer);   
+	TGeoVolume *layerE2 = geom->MakeBox("layerE2", Vacuum, eastxlayerinner,eastylayer,zlayer);   
+	xpanel = eastxlayerouter;
+	ypanel = (eastylayer)/2.; 
 
 	//29
 	sprintf(panel_name,"panel%d",29);
-	panel[29]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-halfHoleLength,zpanel);
+	panel[29]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-eastHalfOverlapOuter,zpanel);
 	ypos = -eastylayer+(2*0+1)*ypanel;  
-	layerE2->AddNode(panel[29],29, new TGeoTranslation(0,ypos,0));
+	layerE1->AddNode(panel[29],29, new TGeoTranslation(0,ypos,0));
 	mcscoords[29][0] = ypos;
 	mcscoords[29][1] = -eastylayer;
 	mcscoords[29][2] = 0;
 
 	//31
 	sprintf(panel_name,"panel%d",31);
-	panel[31]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+halfHoleLength,zpanel);
+	panel[31]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+eastHalfOverlapOuter,zpanel);
 	ypos = -eastylayer+(2*1+1)*ypanel;  
-	layerE2->AddNode(panel[31],31, new TGeoTranslation(0,ypos,0));
+	layerE1->AddNode(panel[31],31, new TGeoTranslation(0,ypos,0));
 	mcscoords[31][0] = ypos;
 	mcscoords[31][1] = -eastylayer;
 	mcscoords[31][2] = 0;
 	
+	xpanel = eastxlayerinner;
+	
+	//28
+	sprintf(panel_name,"panel%d",28);
+	panel[28]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+eastHalfOverlapInner,zpanel);
+	ypos = -eastylayer+(2*0+1)*ypanel;  
+	layerE2->AddNode(panel[28],28, new TGeoTranslation(0,ypos,0));
+	mcscoords[28][0] = ypos;
+	mcscoords[28][1] = -eastylayer;
+	mcscoords[28][2] = 0;
+
+	//30
+	sprintf(panel_name,"panel%d",30);
+	panel[30]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-eastHalfOverlapInner,zpanel);
+	ypos = -eastylayer+(2*1+1)*ypanel;  
+	layerE2->AddNode(panel[30],30, new TGeoTranslation(0,ypos,0));
+	mcscoords[30][0] = ypos;
+	mcscoords[30][1] = -eastylayer;
+	mcscoords[30][2] = 0;
+	
 	//cryovat accessor hole
-	TGeoVolume *accessor1 = geom->MakeBox("accessor1", Vacuum, halfHoleLength*2, zlayer*2, halfHoleLength*2);
-	top->AddNode(accessor1, 0, new TGeoTranslation(-zlayer*2, -eastylayer+2*zlayer, 0));
+	TGeoVolume *accessor1 = geom->MakeBox("accessor1", Vacuum, 25.40 / 2, zlayer*2, 21.59 / 2);
+	top->AddNode(accessor1, 0, new TGeoTranslation(0, -southylayer-2*zlayer, 0));
 
 	// add EAST layers to mother
 	TGeoRotation *rot5 = new TGeoRotation();
 	rot5->RotateX(90);
 	rot5->RotateY(90);   
-	top->AddNode(layerE1,1, new TGeoCombiTrans(halfHoleLength,-eastylayer+zlayer,0,rot5));
-	top->AddNode(layerE2,2, new TGeoCombiTrans(-halfHoleLength,-eastylayer+3*zlayer,0,rot5));
+	top->AddNode(layerE1,1, new TGeoCombiTrans(-eastHalfOverlapInner,-southylayer-3*zlayer,0,rot5));
+	top->AddNode(layerE2,2, new TGeoCombiTrans(eastHalfOverlapOuter,-southylayer-zlayer,-(eastxlayerouter-eastxlayerinner),rot5));
 
 
 	// SOUTH veto panels-------------------------------------------------------------
 	// panel 24,26 SOUTH inner
 	// panel 25,27 SOUTH outer
-	
-	Double_t southxlayer = 203.29 / 2;
-	Double_t southylayer = 203.29 / 2;
 
-	TGeoVolume *layerS1 = geom->MakeBox("layerS1", Vacuum, southxlayer,southylayer,zlayer);   
-	TGeoVolume *layerS2 = geom->MakeBox("layerS2", Vacuum, southxlayer,southylayer,zlayer);   
+	TGeoVolume *layerS1 = geom->MakeBox("layerS1", Vacuum, southxlayerouter,southylayer,zlayer);   
+	TGeoVolume *layerS2 = geom->MakeBox("layerS2", Vacuum, southxlayerinner,southylayer,zlayer);   
 
-	xpanel = southxlayer;    
-	ypanel = (southylayer-4*zlayer)/2.; 
-
-	//24
-	sprintf(panel_name,"panel%d",24);
-	panel[24]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+halfHoleLength,zpanel);
-	ypos = -southylayer+(2*0+1)*ypanel;  
-	layerS1->AddNode(panel[24],24, new TGeoTranslation(0,ypos,0));
-	mcscoords[24][0] = -southxlayer;
-	mcscoords[24][1] = ypos;
-	mcscoords[24][2] = 0;
-
-	//26
-	sprintf(panel_name,"panel%d",26);
-	panel[26]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-halfHoleLength,zpanel);
-	ypos = -southylayer+(2*1+1)*ypanel;  
-	layerS1->AddNode(panel[26],26, new TGeoTranslation(0,ypos,0));
-	mcscoords[26][0] = -southxlayer;
-	mcscoords[26][1] = ypos;
-	mcscoords[26][2] = 0;
+	xpanel = southxlayerouter;    
+	ypanel = (southylayer)/2.; 
 
 	//25
 	sprintf(panel_name,"panel%d",25);
-	panel[25]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-halfHoleLength,zpanel);
+	panel[25]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+southHalfOverlapOuter,zpanel);
 	ypos = -southylayer+(2*0+1)*ypanel;  
-	layerS2->AddNode(panel[25],25, new TGeoTranslation(0,ypos,0));
-	mcscoords[25][0] = -southxlayer;
+	layerS1->AddNode(panel[25],25, new TGeoTranslation(0,ypos,0));
+	mcscoords[25][0] = -southxlayerouter;
 	mcscoords[25][1] = ypos;
 	mcscoords[25][2] = 0;
 
 	//27
 	sprintf(panel_name,"panel%d",27);
-	panel[27]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+halfHoleLength,zpanel);
+	panel[27]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-southHalfOverlapOuter,zpanel);
 	ypos = -southylayer+(2*1+1)*ypanel;  
-	layerS2->AddNode(panel[27],27, new TGeoTranslation(0,ypos,0));
-	mcscoords[27][0] = -southxlayer;
+	layerS1->AddNode(panel[27],27, new TGeoTranslation(0,ypos,0));
+	mcscoords[27][0] = -southxlayerouter;
 	mcscoords[27][1] = ypos;
 	mcscoords[27][2] = 0;
 	
+	xpanel = southxlayerinner;
+	
+	//24
+	sprintf(panel_name,"panel%d",24);
+	panel[24]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-southHalfOverlapInner,zpanel);
+	ypos = -southylayer+(2*0+1)*ypanel;  
+	layerS2->AddNode(panel[24],24, new TGeoTranslation(0,ypos,0));
+	mcscoords[24][0] = -southxlayerinner;
+	mcscoords[24][1] = ypos;
+	mcscoords[24][2] = 0;
+
+	//26
+	sprintf(panel_name,"panel%d",26);
+	panel[26]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+southHalfOverlapInner,zpanel);
+	ypos = -southylayer+(2*1+1)*ypanel;  
+	layerS2->AddNode(panel[26],26, new TGeoTranslation(0,ypos,0));
+	mcscoords[26][0] = -southxlayerinner;
+	mcscoords[26][1] = ypos;
+	mcscoords[26][2] = 0;
+	
 	//cryovat accessor hole
-	TGeoVolume *accessor2 = geom->MakeBox("accessor1", Vacuum, zlayer*2, halfHoleLength*2, halfHoleLength*2);
-	top->AddNode(accessor2, 0, new TGeoTranslation(-southxlayer+2*zlayer, 0, 0));
+	TGeoVolume *accessor2 = geom->MakeBox("accessor1", Vacuum, zlayer*2, 25.40 / 2,  21.59 / 2);
+	top->AddNode(accessor2, 0, new TGeoTranslation(-eastylayer, southHalfOverlapOuter, 0));
+
 
 	// add SOUTH layers to mother
 	TGeoRotation *rot6 = new TGeoRotation();
 	rot6->RotateY(90);   
-	top->AddNode(layerS1,1, new TGeoCombiTrans(-southxlayer+zlayer,+4*zlayer+halfHoleLength,0,rot6)); // need to move 2x the width of a panel in the -y direction
-	top->AddNode(layerS2,2, new TGeoCombiTrans(-southxlayer+3*zlayer,+4*zlayer-halfHoleLength,0,rot6));
+	top->AddNode(layerS1,1, new TGeoCombiTrans(-((eastylayer)+zlayer), southHalfOverlapOuter,0,rot6));
+	top->AddNode(layerS2,2, new TGeoCombiTrans(-((eastylayer)-zlayer), -southHalfOverlapInner,-(southxlayerouter-southxlayerinner),rot6));
+	
+	// north veto panels-------------------------------------------------------------
+	// panel 15,16 north outer
+	// panel 19,23 north inner
+	
+	TGeoVolume *layern1 = geom->MakeBox("layern1", Vacuum, northxlayerouter,northylayer,zlayer);   
+	TGeoVolume *layern2 = geom->MakeBox("layern2", Vacuum, northxlayerinner,northylayer,zlayer);   
+
+	xpanel = northxlayerouter;    
+	ypanel = northylayer/2.;    
+
+	// 15
+	sprintf(panel_name,"panel%d",15);
+	panel[15]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-halfAmountOfOverlap,zpanel);
+	ypos = -northylayer+(2*0+1)*ypanel;  
+	layern1->AddNode(panel[15],15, new TGeoTranslation(0,ypos,0));
+	mcscoords[15][0] = northxlayerouter;
+	mcscoords[15][1] = ypos;
+	mcscoords[15][2] = 0;
+	
+	//16
+	sprintf(panel_name,"panel%d",16);
+	panel[16]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+halfAmountOfOverlap,zpanel);
+	ypos = -northylayer+(2*1+1)*ypanel;  
+	layern1->AddNode(panel[16],16, new TGeoTranslation(0,ypos,0));
+	mcscoords[16][0] = northxlayerouter;
+	mcscoords[16][1] = ypos;
+	mcscoords[16][2] = 0;
+	    
+	xpanel = northxlayerinner;
+	    
+	//19
+	sprintf(panel_name,"panel%d",19);
+	panel[19]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel+halfAmountOfOverlap,zpanel);
+	ypos = -northylayer+(2*0+1)*ypanel;  
+	layern2->AddNode(panel[19],19, new TGeoTranslation(0,ypos,0));
+	mcscoords[19][0] = northxlayerinner;
+	mcscoords[19][1] = ypos;
+	mcscoords[19][2] = 0;
+	//23
+	sprintf(panel_name,"panel%d",23);
+	panel[23]= geom->MakeBox(panel_name, Vacuum, xpanel,ypanel-halfAmountOfOverlap,zpanel);
+	ypos = -northylayer+(2*1+1)*ypanel;  
+	layern2->AddNode(panel[23],23, new TGeoTranslation(0,ypos,0));
+	mcscoords[23][0] = northxlayerinner;
+	mcscoords[23][1] = ypos;
+	mcscoords[23][2] = 0;
+
+	// add north layers to mother
+	TGeoRotation *rot3 = new TGeoRotation();
+	rot3->RotateY(90);   
+	top->AddNode(layern1,1, new TGeoCombiTrans((eastxlayerinner)-2*zlayer,-halfAmountOfOverlap - (southylayer - northylayer),-(eastxlayerouter-northxlayerouter),rot3));
+	top->AddNode(layern2,2, new TGeoCombiTrans((eastxlayerinner)-4*zlayer,halfAmountOfOverlap - (southylayer - northylayer),-(northxlayerouter-northxlayerinner) -(eastxlayerouter-northxlayerouter),rot3));
+
+	// west veto panels-------------------------------------------------------------
+	// panel 12,13 west inner
+	// panel 14,22 west outer
+	//switch role of x and y to get panel shape
+	 
+	TGeoVolume *layerw1 = geom->MakeBox("layerw1", Vacuum, westxlayerouter,westylayer,zlayer);   
+	TGeoVolume *layerw2 = geom->MakeBox("layerw2", Vacuum, westxlayerinner,westylayer,zlayer);
+
+	xpanel = westxlayerouter;    
+	ypanel = (westylayer)/2.;
+
+	// 12
+	sprintf(panel_name,"panel%d",12);
+	panel[12]= geom->MakeBox(panel_name, Vacuum, ypanel+halfAmountOfOverlap,xpanel,zpanel);
+	ypos = -westylayer+(2*0+1)*ypanel;  
+	layerw1->AddNode(panel[12],12, new TGeoTranslation(ypos,0,0));
+	mcscoords[12][0] = ypos;
+	mcscoords[12][1] = westxlayerouter;
+	mcscoords[12][2] = 0;
+	
+	//13
+	sprintf(panel_name,"panel%d",13);
+	panel[13]= geom->MakeBox(panel_name, Vacuum, ypanel-halfAmountOfOverlap,xpanel,zpanel);
+	ypos = -westylayer+(2*1+1)*ypanel;  
+	layerw1->AddNode(panel[13],13, new TGeoTranslation(ypos,0,0));
+	mcscoords[13][0] = ypos;
+	mcscoords[13][1] = westxlayerouter;
+	mcscoords[13][2] = 0;
+	
+	xpanel = westxlayerinner;  
+	
+	//22
+	sprintf(panel_name,"panel%d",22);
+	panel[22]= geom->MakeBox(panel_name, Vacuum, ypanel-halfAmountOfOverlap,xpanel,zpanel);
+	ypos = -westylayer+(2*0+1)*ypanel;  
+	layerw2->AddNode(panel[22],22, new TGeoTranslation(ypos,0,0));
+	mcscoords[22][0] = ypos;
+	mcscoords[22][1] = westxlayerinner;
+	mcscoords[22][2] = 0;
+	
+	//14
+	sprintf(panel_name,"panel%d",14);
+	panel[14]= geom->MakeBox(panel_name, Vacuum, ypanel+halfAmountOfOverlap,xpanel,zpanel);
+	ypos = -westylayer+(2*1+1)*ypanel;  
+	layerw2->AddNode(panel[14],14, new TGeoTranslation(ypos,0,0));
+	mcscoords[14][0] = ypos;
+	mcscoords[14][1] = westxlayerinner;
+	mcscoords[14][2] = 0;
+
+	// add west layers to mother
+	TGeoRotation *rot4 = new TGeoRotation();
+	rot4->RotateX(90);   
+	top->AddNode(layerw1,1, new TGeoCombiTrans(halfAmountOfOverlap+2*zlayer,southylayer-zlayer,-(eastxlayerouter-westxlayerouter),rot4));
+	top->AddNode(layerw2,2, new TGeoCombiTrans(-halfAmountOfOverlap+2*zlayer,southylayer-3*zlayer,-(westxlayerouter-westxlayerinner) -(eastxlayerouter-westxlayerouter),rot4));
 
 	// done adding panels! -------------------------------------------------------------
 	
 	// create the cryovats--------------------------------------------------------------
-	Double_t cryoboxx = 50 / 2;
-	Double_t cryoboxy = 90 / 2;
-	Double_t cryoboxz = 60 / 2;
+	Double_t cryoboxx = 34.34 / 2;
+	Double_t cryoboxy = 68.68 / 2;
+	Double_t cryoboxz = 44.56 / 2;
+	Double_t yoffset = 9.16;
+	Double_t halfGapBetween = 3.19;
 	
 	TGeoVolume *cryobox = geom->MakeBox("layert1", Vacuum, cryoboxx,cryoboxy,cryoboxz);
 
 	TGeoVolume *cryovat1 = geom->MakeEltu("cryovat", Vacuum, cryoboxy/2, cryoboxy/2, cryoboxz/2);
-	cryobox->AddNode(cryovat1,1, new TGeoTranslation(0,cryoboxy/2,0));
+	cryobox->AddNode(cryovat1,1, new TGeoTranslation(0,cryoboxy/2 + halfGapBetween - yoffset,0));
 	
 	TGeoVolume *cryovat2 = geom->MakeEltu("cryovat", Vacuum, cryoboxy/2, cryoboxy/2, cryoboxz/2);
-	cryobox->AddNode(cryovat2,2, new TGeoTranslation(0,-cryoboxy/2,0));
+	cryobox->AddNode(cryovat2,2, new TGeoTranslation(0,-cryoboxy/2 - halfGapBetween - yoffset,0));
 	
 	
 	//cryobox->SetVisDaughters(false);
@@ -969,7 +998,7 @@ TH2F *QDCangle5 = new TH2F("QDCangle5","30-45 theta slice", 180, 30, 45, 180, 0 
 TH2F *QDCangle6 = new TH2F("QDCangle6","5-45 theta slice", 180, 5, 45, 180, 0 , 4000);
 TH2F *QDCslant = new TH2F("QDCslant","QDC vs Slant Depth for top and bottom n=4 layer hits", 100, 1200, 3000, 100, 0, 4000);
 TH2F *thetaSlant = new TH2F("thetaSlant","Theta vs Slant Depth for top and bottom n=4 layer hits",100, 1200, 3000, 100, 0, 45);
-TH2F *inThruHist = new TH2F("inThruHist","Inches particle passed through detector vs QDC val", 180, .95, 2, 180, 0, 4000);
+TH2F *inThruHist = new TH2F("inThruHist","Inches particle passed through detector vs QDC val", 180, .95, 1.5, 180, 0, 4000);
 	
 //fills all plots and prints out wireframe pdfs
 void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t ievent) {
@@ -1648,7 +1677,7 @@ void VetoDisplay()
 	//lastly, draw and print the plots	
 	drawPlots();
 	printPlots();
-
+	SlantDepth();
 }
 
 int main(int argc, char* argv[]) {
