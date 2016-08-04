@@ -249,7 +249,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	    layert1->AddNode(panel[17+i],i, new TGeoTranslation(0,ypos,0));
 	    mcscoords[17+i][0] = 0;
 	    mcscoords[17+i][1] = ypos;
-	    mcscoords[17+i][2] = topxlayerupper;
+	    mcscoords[17+i][2] = northxlayerinner+3*zlayer -(westxlayerouter-westxlayerinner) -(eastxlayerouter-westxlayerouter);
 
 		
 		xpanel = topxlayerlower;
@@ -262,7 +262,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	    layert2->AddNode(panel[20+i],i, new TGeoTranslation(0,ypos,0));
 	    mcscoords[20+i][0] = ypos;
 	    mcscoords[20+i][1] = 0;
-	    mcscoords[20+i][2] = topxlayerlower;
+	    mcscoords[20+i][2] = northxlayerinner+3*zlayer -(westxlayerouter-westxlayerinner) -(eastxlayerouter-westxlayerouter);
   	}
   	// add top layers to mother
   	top->AddNode(layert1,1, new TGeoTranslation(2*zlayer,0,northxlayerinner+3*zlayer -(westxlayerouter-westxlayerinner) -(eastxlayerouter-westxlayerouter)));
@@ -442,8 +442,8 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	// add north layers to mother
 	TGeoRotation *rot3 = new TGeoRotation();
 	rot3->RotateY(90);   
-	top->AddNode(layern1,1, new TGeoCombiTrans((eastxlayerinner)-2*zlayer,-halfAmountOfOverlap - (southylayer - northylayer),-(eastxlayerouter-northxlayerouter),rot3));
-	top->AddNode(layern2,2, new TGeoCombiTrans((eastxlayerinner)-4*zlayer,halfAmountOfOverlap - (southylayer - northylayer),-(northxlayerouter-northxlayerinner) -(eastxlayerouter-northxlayerouter),rot3));
+	top->AddNode(layern1,1, new TGeoCombiTrans((eastylayer)+zlayer,-halfAmountOfOverlap - (southylayer - northylayer),-(eastxlayerouter-northxlayerouter),rot3));
+	top->AddNode(layern2,2, new TGeoCombiTrans((eastylayer)-zlayer,halfAmountOfOverlap - (southylayer - northylayer),-(northxlayerouter-northxlayerinner) -(eastxlayerouter-northxlayerouter),rot3));
 
 	// west veto panels-------------------------------------------------------------
 	// panel 12,13 west inner
