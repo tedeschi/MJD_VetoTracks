@@ -35,9 +35,9 @@ Int_t nbiny = h->GetNbinsY();
 // main function -------------------------------------------------------
 void SlantDepth() {
 	TList* hList = new TList();
-	TH2F *slantHist = new TH2F("slantHist","slantHist",360,0,360, 90,0,90);
-	TH2F *slantLowTheta = new TH2F("slantLowTheta","slantLowTheta",720,0,360, 120,0,60);
-	TH2F *slantHighTheta = new TH2F("slantHighTheta","slantHighTheta",720,0,360, 60,60,90);
+	TH2F *slantHist = new TH2F("slantHist","Slant Depth",360,0,360, 90,0,90);
+	TH2F *slantLowTheta = new TH2F("slantLowTheta","Slant Depth low Theta",720,0,360, 120,0,60);
+	TH2F *slantHighTheta = new TH2F("slantHighTheta","Slant Depth High Theta",720,0,360, 60,60,90);
 	TH2F *lookupHist = new TH2F("lookupHist","lookupHist",nbinx,0,360, nbiny,0,90);
 	
 	//filling 0-90 theta histo -----------------------------------------

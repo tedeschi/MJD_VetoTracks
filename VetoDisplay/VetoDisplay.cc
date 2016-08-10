@@ -18,6 +18,7 @@ string inputFile = "../Data/vetoskims/vList_DS1_1-6.txt"; //EDIT THIS FOR INPUT 
 int isNextTo(int panel1, int panel2);
 int isLayerHit(int panel1, int panel2);
 std::vector<Double_t> hitLocation(int panel1, int panel2);
+Int_t addedEvents = 0;
 
 int coloring(int qdc,int mode){
 
@@ -187,7 +188,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 		ypos = -ylayer1+(2*i+1)*ypanel1;  
 		layerbo1->AddNode(panel[i],i, new TGeoTranslation(loweroffsetx,ypos,0));
 
-		sprintf(panel_name,"panel%d",i);
+		sprintf(panel_name,"panel%d",6+i);
 		panel[6+i]= geom->MakeBox(panel_name, Vacuum, xlayer2,ypanel1,zpanel1);
 		ypos = -ylayer1+(2*i+1)*ypanel1;  
 		layerbo2->AddNode(panel[6+i],i, new TGeoTranslation(upperoffsetx,ypos,0));
@@ -218,7 +219,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 		mcscoords[i][1] = ypos;
 		mcscoords[i][2] = -zplace-3*zlayer1;
 
-		sprintf(panel_name,"panel%d",i);
+		sprintf(panel_name,"panel%d",6+i);
 		panel[6+i]= geom->MakeBox(panel_name, Vacuum, xlayer2,ypanel2,detectorHeight/2);
 		ypos = -ylayer1+(2*i+1)*ypanel2+(spaceBetweenDetectorsy *i + 1) + upperoffsety; 
 		layerbi2->AddNode(panel[6+i],i, new TGeoTranslation(upperoffsetx,ypos,0));
@@ -289,7 +290,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	ypos = -eastylayer+(2*0+1)*ypanel;  
 	layerE1->AddNode(panel[29],29, new TGeoTranslation(0,ypos,0));
 	mcscoords[29][0] = ypos;
-	mcscoords[29][1] = -eastylayer;
+	mcscoords[29][1] = -southylayer-zlayer;
 	mcscoords[29][2] = 0;
 
 	//31
@@ -298,7 +299,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	ypos = -eastylayer+(2*1+1)*ypanel;  
 	layerE1->AddNode(panel[31],31, new TGeoTranslation(0,ypos,0));
 	mcscoords[31][0] = ypos;
-	mcscoords[31][1] = -eastylayer;
+	mcscoords[31][1] = -southylayer-zlayer;
 	mcscoords[31][2] = 0;
 	
 	xpanel = eastxlayerinner;
@@ -309,7 +310,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	ypos = -eastylayer+(2*0+1)*ypanel;  
 	layerE2->AddNode(panel[28],28, new TGeoTranslation(0,ypos,0));
 	mcscoords[28][0] = ypos;
-	mcscoords[28][1] = -eastylayer;
+	mcscoords[28][1] = -southylayer-zlayer;
 	mcscoords[28][2] = 0;
 
 	//30
@@ -318,7 +319,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	ypos = -eastylayer+(2*1+1)*ypanel;  
 	layerE2->AddNode(panel[30],30, new TGeoTranslation(0,ypos,0));
 	mcscoords[30][0] = ypos;
-	mcscoords[30][1] = -eastylayer;
+	mcscoords[30][1] = -southylayer-zlayer;
 	mcscoords[30][2] = 0;
 	
 	//cryovat accessor hole
@@ -462,7 +463,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	ypos = -westylayer+(2*0+1)*ypanel;  
 	layerw1->AddNode(panel[12],12, new TGeoTranslation(ypos,0,0));
 	mcscoords[12][0] = ypos;
-	mcscoords[12][1] = westxlayerouter;
+	mcscoords[12][1] = southylayer-zlayer;
 	mcscoords[12][2] = 0;
 	
 	//13
@@ -471,7 +472,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	ypos = -westylayer+(2*1+1)*ypanel;  
 	layerw1->AddNode(panel[13],13, new TGeoTranslation(ypos,0,0));
 	mcscoords[13][0] = ypos;
-	mcscoords[13][1] = westxlayerouter;
+	mcscoords[13][1] = southylayer-zlayer;
 	mcscoords[13][2] = 0;
 	
 	xpanel = westxlayerinner;  
@@ -482,7 +483,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	ypos = -westylayer+(2*0+1)*ypanel;  
 	layerw2->AddNode(panel[22],22, new TGeoTranslation(ypos,0,0));
 	mcscoords[22][0] = ypos;
-	mcscoords[22][1] = westxlayerinner;
+	mcscoords[22][1] = southylayer-zlayer;
 	mcscoords[22][2] = 0;
 	
 	//14
@@ -491,7 +492,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	ypos = -westylayer+(2*1+1)*ypanel;  
 	layerw2->AddNode(panel[14],14, new TGeoTranslation(ypos,0,0));
 	mcscoords[14][0] = ypos;
-	mcscoords[14][1] = westxlayerinner;
+	mcscoords[14][1] = southylayer-zlayer;
 	mcscoords[14][2] = 0;
 
 	// add west layers to mother
@@ -509,13 +510,15 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	Double_t yoffset = 9.16;
 	Double_t halfGapBetween = 3.19;
 	
-	TGeoVolume *cryobox = geom->MakeBox("layert1", Vacuum, cryoboxx,cryoboxy,cryoboxz);
+	TGeoVolume *cryobox = geom->MakeBox("cryobox", Vacuum, cryoboxx,cryoboxy,cryoboxz);
 
-	TGeoVolume *cryovat1 = geom->MakeEltu("cryovat", Vacuum, cryoboxy/2, cryoboxy/2, cryoboxz/2);
+	TGeoVolume *cryovat1 = geom->MakeEltu("cryovat1", Vacuum, cryoboxy/2, cryoboxy/2, cryoboxz/2);
 	cryobox->AddNode(cryovat1,1, new TGeoTranslation(0,cryoboxy/2 + halfGapBetween - yoffset,0));
 	
-	TGeoVolume *cryovat2 = geom->MakeEltu("cryovat", Vacuum, cryoboxy/2, cryoboxy/2, cryoboxz/2);
+	TGeoVolume *cryovat2 = geom->MakeEltu("cryovat2", Vacuum, cryoboxy/2, cryoboxy/2, cryoboxz/2);
 	cryobox->AddNode(cryovat2,2, new TGeoTranslation(0,-cryoboxy/2 - halfGapBetween - yoffset,0));
+	
+	top->AddNode(cryobox, 1, 0);
 	
 	
 	//cryobox->SetVisDaughters(false);
@@ -633,7 +636,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
    }
 
 	if(numOfPlanesHit <= 2 && numberOfPanelsHit == 4 && (bottomSide == 2 || topSide == 2
-		|| northSide == 2 || eastSide == 2 || southSide == 2 || westSide == 2)) {
+		|| northSide == 2 || eastSide == 2 || southSide == 2 || westSide == 2) || (numberOfPanelsHit == 5 && topSide == 2 && bottomSide == 2) ) {
 		geom->DrawTracks();
 	}
 	// -----------------------------------------------------------------
@@ -700,7 +703,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	phi = 361;
 	theta = 361;
 	//some vector info
-	if(allHitCoords.size() > 1 && numberOfPanelsHit == 4) {
+	if( (allHitCoords.size() > 1 && numberOfPanelsHit == 4) || (allHitCoords.size() > 1 && numberOfPanelsHit == 5 && topSide == 2 && bottomSide == 2) ) {
 		TVector3 r1;
 		TVector3 r2;
 		TVector3 t1;
@@ -711,9 +714,44 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 		phi = t1.Phi()*(180/pi); //180/pi to get deg rather than rad
 		theta = t1.Theta()*(180/pi);
 		
+		//check if the track went through the cryostats; -------
+		bool passedThroughCryo = false;
+		Double_t point[3], dircos[3];
+		cout << "90-theta: " << theta << endl;
+		point[0] = allHitCoords[1][0];
+		point[1] = allHitCoords[1][1];
+		point[2] = allHitCoords[1][2];
+		//dircos[0] = allHitCoords[0][0];
+		//dircos[1] = allHitCoords[0][1];
+		//dircos[2] = allHitCoords[0][2];
+		Double_t degrad = pi/180;
+		dircos[0] = sin(theta*degrad) * sin(phi*degrad);
+		dircos[1] = sin(theta*degrad) * cos(phi*degrad);
+		dircos[2] = -cos(theta*degrad);
+		printf("direction : %f %f %f\n", dircos[0], dircos[1], dircos[2]);
+
+		geom->InitTrack(point,dircos);
+		
+		while(!geom->IsOutside()) {
+			printf("current: %s\n", geom->GetPath());
+			string path = geom->GetPath();
+			if(path.compare("/TOP_1/cryobox_1") == 0) {
+				passedThroughCryo = true;
+			}
+			geom->FindNextBoundary();
+			cout<<"Distance to Boundary is "<<geom->GetStep()<<" cm."<<endl;
+			cout<<"Is step entering: " << geom->IsStepEntering() << endl;;
+			geom->Step();
+		}
+		// -------------------------------------------------------------
+		
 		if(phi < 0) {
 			phi += 360; //makes negative phi's the correct positive
 		}
+		
+		char passedThroughOut[150];
+		sprintf(passedThroughOut,"Passed through Cryostat: %d",passedThroughCryo); 
+		pt->AddText(passedThroughOut);
 	
 		char phiout[150];
 		sprintf(phiout,"Phi: %.1f deg",phi); 
@@ -722,6 +760,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 		char thetaout[150];
 		sprintf(thetaout,"Theta: %.1f deg",theta);
 		pt->AddText(thetaout);
+		
 	}
 	
 	pt->Draw();
@@ -740,8 +779,8 @@ int isNextTo(int panel1, int panel2) {
 	{0,1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{1,0,1,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,1,0,1,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,1,0,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{0,0,1,0,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, 
+	{0,0,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, 
 	{0,0,0,0,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{1,1,1,1,1,1,0,1,0,0,0,0,0,1,1,1,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,1},
 	{1,1,1,1,1,1,1,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
@@ -752,7 +791,7 @@ int isNextTo(int panel1, int panel2) {
 	{0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,1,1,1,0,0,0,1,0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,1,1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0},
 	{0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0},
@@ -760,15 +799,15 @@ int isNextTo(int panel1, int panel2) {
 	{0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,0,0,1,0,0,1,0,1,0,1,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,1,0,0,0,0,0,0,1,0},
 	{0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,1,0,1,1,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,1,1},
+	{0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,0,0,1,1,0,0,0,0,1,0,0,1,1,1},
 	{0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1},
-	{0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1,1,0,1},
-	{0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0}
+	{0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,1,1,0,1},
+	{0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0}
 	};
 
 	return panelTable[panel1][panel2];
@@ -970,7 +1009,11 @@ TCanvas *QDCanglecan = new TCanvas("QDCanglecan"," ", 1200, 800);
 TCanvas *QDCanglecan2 = new TCanvas("QDCanglecan2"," ", 1200, 800);
 TCanvas *QDCanglecan3 = new TCanvas("QDCanglecan3"," ", 1200, 800);
 TCanvas *QDCslantcan = new TCanvas("QDCslantcan"," ", 1200, 800);
-TCanvas *inThrucan = new TCanvas("inThrucan"," ", 1600, 700);
+TCanvas *inThrucan = new TCanvas("inThrucan"," ", 1200, 800);
+TCanvas *totalQDCanglecan = new TCanvas("totalQDCanglecan"," ", 1200, 800);
+TCanvas *totalQDCanglecan2 = new TCanvas("totalQDCanglecan2"," ", 1200, 800);
+TCanvas *totalQDCanglecan3 = new TCanvas("totalQDCanglecan3"," ", 1200, 800);
+TCanvas *totalQDCslantcan = new TCanvas("totalQDCslantcan"," ", 1600, 700);
 
 TH1F *graph1 = new TH1F("graph1","Number of panels hit per event", 65, 0, 33);
 TH1F *graph2 = new TH1F("graph2","Times each panel hit", 65, 0, 33);
@@ -990,52 +1033,124 @@ TH1F *graphn8 = new TH1F("graphn8","QDC total for 8 panels hit", 100, 0, 18000);
 TH1F *graphn9 = new TH1F("graphn9","QDC total for 9 panels hit", 100, 0, 18000);
 TH2F *thetaPhi = new TH2F("thetaPhi","Theta vs. Phi for top and bottom n=4 layer hits", 90, 0, 360, 90, -1, 50);
 TH2F *costhetaPhi = new TH2F("costhetaPhi","Cos(Theta) vs. Phi for top and bottom n=4 layer hits", 90, 0, 360, 90, 0, 1.3);
-TH2F *QDCangle = new TH2F("QDCangle","QDC vs Theta for top and bottom n=4 layer hits", 180, 0, 45, 180, 0 , 4000);
-TH2F *QDCangle2 = new TH2F("QDCangle2","5-15 theta slice", 180, 5, 15, 180, 0 , 4000);
-TH2F *QDCangle3 = new TH2F("QDCangle3","15-22 theta slice", 180, 15, 22, 180, 0 , 4000);
-TH2F *QDCangle4 = new TH2F("QDCangle4","22-30 theta slice", 180, 22, 30, 180, 0 , 4000);
-TH2F *QDCangle5 = new TH2F("QDCangle5","30-45 theta slice", 180, 30, 45, 180, 0 , 4000);
-TH2F *QDCangle6 = new TH2F("QDCangle6","5-45 theta slice", 180, 5, 45, 180, 0 , 4000);
-TH2F *QDCslant = new TH2F("QDCslant","QDC vs Slant Depth for top and bottom n=4 layer hits", 100, 1200, 3000, 100, 0, 4000);
-TH2F *thetaSlant = new TH2F("thetaSlant","Theta vs Slant Depth for top and bottom n=4 layer hits",100, 1200, 3000, 100, 0, 45);
-TH2F *inThruHist = new TH2F("inThruHist","Inches particle passed through detector vs QDC val", 180, .95, 1.5, 180, 0, 4000);
+TH2D *QDCangle = new TH2D("QDCangle","QDC vs Theta for top and bottom n=4 layer hits", 180, 0, 45, 180, 0 , 5000);
+TProfile *hprof = new TProfile("hprof","QDC angle profile", 180, 0, 45, 0, 5000);
+TH2D *QDCangleTwo = new TH2D("QDCangleTwo","9-13 theta slice", 180, 9, 13, 180, 0 , 5000);
+TH2D *QDCangleThree = new TH2D("QDCangleThree","13-17 theta slice", 180, 13, 17, 180, 0 , 5000);
+TH2D *QDCangleFour = new TH2D("QDCangleFour","17-23 theta slice", 180, 17, 23, 180, 0 , 5000);
+TH2D *QDCangleFive = new TH2D("QDCangleFive","23-32 theta slice", 180, 23, 32, 180, 0 , 5000);
+TH2D *QDCangleSix = new TH2D("QDCangleSix","32-45 theta slice", 180, 32, 45, 180, 0 , 5000);
+TH2F *QDCslant = new TH2F("QDCslant","QDC vs Slant Depth for top and bottom n=4 layer hits", 100, 1200, 2200, 100, 0, 5000);
+TH2F *thetaSlant = new TH2F("thetaSlant","Theta vs Slant Depth for top and bottom n=4 layer hits",100, 1200, 2200, 100, 0, 45);
+TH2F *inThruHist = new TH2F("inThruHist","Inches particle passed through detector vs QDC val for top panels only", 180, .95, 1.5, 180, 0, 5000);
+TH2D *totalQDCangle = new TH2D("totalQDCangle","Total QDC for top panels vs Theta for top and bottom n=4 layer hits", 180, 0, 45, 180, 0 , 12000);
+TH2D *totalQDCangleTwo = new TH2D("totalQDCangleTwo","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 0-9", 180, 0, 9, 180, 0 , 12000);
+TH2D *totalQDCangleThree = new TH2D("totalQDCangleThree","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 9-13", 180, 9, 13, 180, 0 , 12000);
+TH2D *totalQDCangleFour = new TH2D("totalQDCangleFour","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 13-17", 180, 13, 17, 180, 0 , 12000);
+TH2D *totalQDCangleFive = new TH2D("totalQDCangleFive","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 17-23", 180, 17, 23, 180, 0 , 12000);
+TH2D *totalQDCangleSix = new TH2D("totalQDCangleSix","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 23-32", 180, 23, 32, 180, 0 , 12000);
+TH2D *totalQDCangleSeven = new TH2D("totalQDCangleSeven","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 32-45", 180, 32, 45, 180, 0 , 12000);
+TH2F *totalQDCslant = new TH2F("totalQDCslant","Total QDC vs Slant Depth for top and bottom n=4 layer hits", 180, 1200, 2200, 180, 0, 12000);
 	
 //fills all plots and prints out wireframe pdfs
 void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t ievent) {
+	
+	bool totalQDCangleFilled = false;
+	bool totalQDCangleFilled2 = false;
+	Double_t totalQDCtop = 0.0;
+	bool isNotNextToAny = true;
+	Int_t whichPanel = 0;
 	
 	graph1->Fill(numberOfPanelsHit);
 	graph4->Fill(numberOfPanelsHit, totalQDC);
 	graph8->Fill(totalQDC);	
 
-	
+	for (Int_t i = 0; i < 32; i++) {
+		if( qdcvals[i] != 0 && (i == 17 || i == 18 || i == 20 || i == 21) && numOfPlanesHit <= 2 && bottomSide == 2 && topSide == 2) {
+			totalQDCtop += qdcvals[i];
+		}
+	}
+
 	for (Int_t i = 0; i < 32; i++) {
 		if(qdcvals[i] != 0) {
 			graph2->Fill(i+1);
 			graph3->Fill(qdcvals[i], i+1);
 			graph7->Fill(numberOfPanelsHit, i+1);
+			
 			if(numberOfPanelsHit == 2) {
 				graph5->Fill(qdcvals[i], i+1);
 			}
+			
 			if(numberOfPanelsHit == 4) {
 				graph6->Fill(qdcvals[i], i+1);
 			}
-			if(numOfPlanesHit <= 2 && numberOfPanelsHit == 4 && bottomSide == 2 && topSide == 2) { //top and bottom plane hits
-				QDCangle->Fill(theta, qdcvals[i]);
-				QDCangle2->Fill(theta, qdcvals[i]);
-				QDCangle3->Fill(theta, qdcvals[i]);
-				QDCangle4->Fill(theta, qdcvals[i]);
-				QDCangle5->Fill(theta, qdcvals[i]);
-				QDCangle6->Fill(theta, qdcvals[i]);
+			
+			if(numberOfPanelsHit == 4) {
+				if(numOfPlanesHit <= 2 && bottomSide == 2 && topSide == 2) { //top and bottom plane hits
+					if(i == 17 || i == 18 || i == 20 || i == 21) { //top panel only
+					
+					QDCangle->Fill(theta, qdcvals[i]);
+					hprof->Fill(theta, qdcvals[i]);
+					QDCangleTwo->Fill(theta, qdcvals[i]);
+					QDCangleThree->Fill(theta, qdcvals[i]);
+					QDCangleFour->Fill(theta, qdcvals[i]);
+					QDCangleFive->Fill(theta, qdcvals[i]);
+					QDCangleSix->Fill(theta, qdcvals[i]);
+					
+					Double_t slantDepth = SlantDepth(phi,theta);
+					thetaSlant->Fill(slantDepth, theta);
+					QDCslant->Fill(slantDepth, qdcvals[i]);
+					
+					Double_t inThru = 1 / cos(theta * (pi/180));
+					inThruHist->Fill(inThru, qdcvals[i]); //qdc per panel for top panels only
 				
-				Double_t inThru = 1 / cos(theta * (pi/180));
-				inThruHist->Fill(inThru, qdcvals[i]);
+					if(totalQDCangleFilled == false) {
+						totalQDCangle->Fill(theta, totalQDCtop);
+						totalQDCangleTwo->Fill(theta, totalQDCtop);
+						totalQDCangleThree->Fill(theta, totalQDCtop);
+						totalQDCangleFour->Fill(theta, totalQDCtop);
+						totalQDCangleFive->Fill(theta, totalQDCtop);
+						totalQDCangleSix->Fill(theta, totalQDCtop);
+						totalQDCangleSeven->Fill(theta, totalQDCtop);
+						totalQDCslant->Fill(slantDepth, totalQDCtop);
+						totalQDCangleFilled = true;
+					}
 				
-				Double_t slantDepth = SlantDepth(phi,theta);
-				thetaSlant->Fill(slantDepth, theta);
-				QDCslant->Fill(slantDepth, qdcvals[i]);
+					}
+				}
 			}
 		}
 	}
+	/*
+	if(numberOfPanelsHit == 5) {
+		for(Int_t j = 0; j < 32; j++) {
+			if(qdcvals[j] != 0) {
+				for(Int_t k = 0; k < 32; k ++) {
+					if(qdcvals[k] != 0 && isNextTo(j,k) == 1) {
+						isNotNextToAny = false;
+					}
+				}
+				if(isNotNextToAny == true || qdcvals[j] < 500) {
+					whichPanel = j;
+				}
+			}
+		}
+		if( (isNotNextToAny == true || (qdcvals[whichPanel] < 500 && (whichPanel != 17 || whichPanel != 18 || whichPanel != 20 || whichPanel != 21))) && totalQDCangleFilled2 == false) {
+			if(numOfPlanesHit <= 2 && bottomSide == 2 && topSide == 2 && theta != 361) {
+				totalQDCangle->Fill(theta, totalQDCtop);
+				totalQDCangleTwo->Fill(theta, totalQDCtop);
+				totalQDCangleThree->Fill(theta, totalQDCtop);
+				totalQDCangleFour->Fill(theta, totalQDCtop);
+				totalQDCangleFive->Fill(theta, totalQDCtop);
+				totalQDCangleSix->Fill(theta, totalQDCtop);
+				totalQDCangleSeven->Fill(theta, totalQDCtop);
+				totalQDCangleFilled2 = true;
+				addedEvents++;
+			}
+		}
+	}
+	*/
+	
 	//fill qdctotaln canvas and print assembly pdfs
 	char pcanname[150]; 
 	for(int g = 2; g < 9; g++) {
@@ -1349,16 +1464,17 @@ void drawPlots() {
 	costhetaPhiprojx->SetYTitle("Count");
 	costhetaPhiprojx->Draw("bar");
 	
-	
-	
 	//QDC angle canvas
 	QDCanglecan->Divide(2,2);
 	
 	QDCanglecan->cd(1);
-	QDCangle->SetStats(0);
+	//QDCangle->SetStats(1);
 	QDCangle->SetXTitle("Degrees Theta");
 	QDCangle->SetYTitle("QDC per panel");
 	QDCangle->GetYaxis()->SetTitleOffset(1.3);
+	TF1 *myfit = new TF1("myfit","[0]*(1/cos(x*(3.14159/180)))",0,45);
+	myfit->SetParameter(0,500);
+	QDCangle->Fit("myfit");
 	QDCangle->Draw("colz");
 	
 	QDCanglecan->cd(2);
@@ -1374,26 +1490,29 @@ void drawPlots() {
 	QDCangleprojx->Draw("bar");
 	
 	QDCanglecan->cd(4);
+	/*
 	TProfile *QDCangleprofilex = QDCangle->ProfileX();
-	gStyle->SetOptStat(0);
-	gStyle->SetOptFit(1);
+	//gStyle->SetOptStat(0);
+	//gStyle->SetOptFit(1);
+	//QDCangleprofilex->SetStats(0);
 	QDCangleprofilex->SetTitle("Profile X");
 	QDCangleprofilex->SetYTitle("QDC per panel");
 	QDCangleprofilex->GetYaxis()->SetTitleOffset(1.3);
-	QDCangleprofilex->GetYaxis()->SetRangeUser(0.,4000.);
-	QDCangleprofilex->Fit("pol1");
+	QDCangleprofilex->GetYaxis()->SetRangeUser(0.,5000.);
+	*/
+	hprof->GetYaxis()->SetRangeUser(0.,5000.);
+	hprof->Fit("myfit");
+	hprof->Draw();
+	
 	
 	//qdcanglecan2
 	QDCanglecan2->Divide(3,2);
 	
 	QDCanglecan2->cd(1);
-	QDCangle->SetStats(0);
-	QDCangle->SetXTitle("Degrees Theta");
-	QDCangle->SetYTitle("QDC per panel");
-	QDCangle->GetYaxis()->SetTitleOffset(1.3);
 	QDCangle->Draw("colz");
 	
 	QDCanglecan2->cd(4);
+	/*
 	TProfile *QDCangleprofilex2 = QDCangle->ProfileX();
 	gStyle->SetOptStat(0);
 	gStyle->SetOptFit(1);
@@ -1402,11 +1521,14 @@ void drawPlots() {
 	QDCangleprofilex2->GetYaxis()->SetTitleOffset(1.3);
 	QDCangleprofilex2->GetYaxis()->SetRangeUser(0.,4000.);
 	QDCangleprofilex2->Fit("pol1");
+	*/
+	QDCangleprojy->Draw("bar");
 	
 	QDCanglecan2->cd(2);
-	QDCangle2->Draw("colz");
+	QDCangleTwo->Draw("colz");
 	
 	QDCanglecan2->cd(5);
+	/*
 	TProfile *QDCangleprofilex3 = QDCangle2->ProfileX();
 	gStyle->SetOptStat(0);
 	gStyle->SetOptFit(1);
@@ -1415,11 +1537,17 @@ void drawPlots() {
 	QDCangleprofilex3->GetYaxis()->SetTitleOffset(1.3);
 	QDCangleprofilex3->GetYaxis()->SetRangeUser(0.,4000.);
 	QDCangleprofilex3->Fit("pol1");
+	*/
+	TH1D *QDCangleprojyTwo = QDCangleTwo->ProjectionY("qdcangle2",1,180);
+	QDCangleprojyTwo->SetTitle("Projection Y");
+	QDCangleprojyTwo->SetYTitle("Count");
+	QDCangleprojyTwo->Draw("bar");
 	
 	QDCanglecan2->cd(3);
-	QDCangle3->Draw("colz");
+	QDCangleThree->Draw("colz");
 
 	QDCanglecan2->cd(6);
+	/*
 	TProfile *QDCangleprofilex4 = QDCangle3->ProfileX();
 	gStyle->SetOptStat(0);
 	gStyle->SetOptFit(1);
@@ -1428,14 +1556,20 @@ void drawPlots() {
 	QDCangleprofilex4->GetYaxis()->SetTitleOffset(1.3);
 	QDCangleprofilex4->GetYaxis()->SetRangeUser(0.,4000.);
 	QDCangleprofilex4->Fit("pol1");
+	*/
+	TH1D *QDCangleprojyThree = QDCangleThree->ProjectionY("qdcangle3",1,180);
+	QDCangleprojyThree->SetTitle("Projection Y");
+	QDCangleprojyThree->SetYTitle("Count");
+	QDCangleprojyThree->Draw("bar");
 	
 	//qdcanglecan3
 	QDCanglecan3->Divide(3,2);
 	
 	QDCanglecan3->cd(1);
-	QDCangle4->Draw("colz");
+	QDCangleFour->Draw("colz");
 	
 	QDCanglecan3->cd(4);
+	/*
 	TProfile *QDCangleprofilex5 = QDCangle4->ProfileX();
 	gStyle->SetOptStat(0);
 	gStyle->SetOptFit(1);
@@ -1444,11 +1578,17 @@ void drawPlots() {
 	QDCangleprofilex5->GetYaxis()->SetTitleOffset(1.3);
 	QDCangleprofilex5->GetYaxis()->SetRangeUser(0.,4000.);
 	QDCangleprofilex5->Fit("pol1");
+	*/
+	TH1D *QDCangleprojyFour = QDCangleFour->ProjectionY("qdcangle4",1,180);
+	QDCangleprojyFour->SetTitle("Projection Y");
+	QDCangleprojyFour->SetYTitle("Count");
+	QDCangleprojyFour->Draw("bar");
 	
 	QDCanglecan3->cd(2);
-	QDCangle5->Draw("colz");
+	QDCangleFive->Draw("colz");
 	
 	QDCanglecan3->cd(5);
+	/*
 	TProfile *QDCangleprofilex6 = QDCangle5->ProfileX();
 	gStyle->SetOptStat(0);
 	gStyle->SetOptFit(1);
@@ -1457,11 +1597,17 @@ void drawPlots() {
 	QDCangleprofilex6->GetYaxis()->SetTitleOffset(1.3);
 	QDCangleprofilex6->GetYaxis()->SetRangeUser(0.,4000.);
 	QDCangleprofilex6->Fit("pol1");
+	*/
+	TH1D *QDCangleprojyFive = QDCangleFive->ProjectionY("qdcangle5",1,180);
+	QDCangleprojyFive->SetTitle("Projection Y");
+	QDCangleprojyFive->SetYTitle("Count");
+	QDCangleprojyFive->Draw("bar");
 	
 	QDCanglecan3->cd(3);
-	QDCangle6->Draw("colz");
+	QDCangleSix->Draw("colz");
 	
 	QDCanglecan3->cd(6);
+	/*
 	TProfile *QDCangleprofilex7 = QDCangle6->ProfileX();
 	gStyle->SetOptStat(0);
 	gStyle->SetOptFit(1);
@@ -1470,6 +1616,11 @@ void drawPlots() {
 	QDCangleprofilex7->GetYaxis()->SetTitleOffset(1.3);
 	QDCangleprofilex7->GetYaxis()->SetRangeUser(0.,4000.);
 	QDCangleprofilex7->Fit("pol1");
+	*/
+	TH1D *QDCangleprojySix = QDCangleSix->ProjectionY("qdcangle6",1,180);
+	QDCangleprojySix->SetTitle("Projection Y");
+	QDCangleprojySix->SetYTitle("Count");
+	QDCangleprojySix->Draw("bar");
 	
 	//drawing QDCslantcan
 	QDCslantcan->Divide(2,2);
@@ -1487,16 +1638,16 @@ void drawPlots() {
 	
 	QDCslantcan->cd(3);
 	TProfile *QDCslantcanprofilex = QDCslant->ProfileX();
-	gStyle->SetOptStat(0);
-	gStyle->SetOptFit(1);
+	//gStyle->SetOptStat(0);
+	//gStyle->SetOptFit(1);
 	QDCslantcanprofilex->SetTitle("Profile X");
 	QDCslantcanprofilex->SetYTitle("QDC per panel");
 	QDCslantcanprofilex->GetYaxis()->SetTitleOffset(1.3);
-	QDCslantcanprofilex->GetYaxis()->SetRangeUser(0.,4000.);
+	QDCslantcanprofilex->GetYaxis()->SetRangeUser(0.,5000.);
 	QDCslantcanprofilex->Fit("pol1");
 	
 	//drawing inThrucan
-	inThrucan->Divide(2,1);
+	inThrucan->Divide(2,2);
 	
 	inThrucan->cd(1);
 	inThruHist->SetXTitle("Inches");
@@ -1505,13 +1656,123 @@ void drawPlots() {
 	
 	inThrucan->cd(2);
 	TProfile *inThruHistprofilex = inThruHist->ProfileX();
-	gStyle->SetOptStat(0);
-	gStyle->SetOptFit(1);
+	//gStyle->SetOptStat(0);
+	//gStyle->SetOptFit(1);
 	inThruHistprofilex->SetTitle("Profile X");
 	inThruHistprofilex->SetYTitle("QDC per panel");
 	inThruHistprofilex->GetYaxis()->SetTitleOffset(1.3);
-	inThruHistprofilex->GetYaxis()->SetRangeUser(0.,4000.);
+	inThruHistprofilex->GetYaxis()->SetRangeUser(0.,5000.);
 	inThruHistprofilex->Fit("pol1");
+	
+	inThrucan->cd(3);
+	TH1D *inThruprojy = inThruHist->ProjectionY("inThruHistprojy",1,180);
+	inThruprojy->SetTitle("Projection Y");
+	inThruprojy->SetYTitle("Count");
+	inThruprojy->Draw("bar");
+	
+	//totalQDCanglecan
+	totalQDCanglecan->Divide(2,2);
+	
+	totalQDCanglecan->cd(1);
+	totalQDCangle->SetXTitle("Degrees theta");
+	totalQDCangle->SetYTitle("Total QDC");
+	totalQDCangle->GetYaxis()->SetTitleOffset(1.3);
+	TF1 *myfit2 = new TF1("myfit2","[0]*2/cos(x*(3.14159/180))",0,45);
+	myfit2->SetParameter(0,2000);
+	totalQDCangle->Fit("myfit2");
+	totalQDCangle->Draw("colz");
+	
+	/*
+	totalQDCanglecan->cd(2);
+	TProfile *totalQDCangleprofilex = totalQDCangle->ProfileX();
+	//gStyle->SetOptStat(0);
+	//gStyle->SetOptFit(1);
+	totalQDCangleprofilex->SetTitle("Profile X");
+	totalQDCangleprofilex->SetYTitle("total QDC");
+	totalQDCangleprofilex->GetYaxis()->SetTitleOffset(1.3);
+	totalQDCangleprofilex->GetYaxis()->SetRangeUser(0.,12000.);
+	totalQDCangleprofilex->Fit("pol1");
+	*/
+	totalQDCanglecan->cd(3);
+	TH1D *totalQDCangleprojy = totalQDCangle->ProjectionY("totalqdcangle",1,180);
+	totalQDCangleprojy->SetTitle("Projection Y");
+	totalQDCangleprojy->SetYTitle("Count");
+	totalQDCangleprojy->Draw("bar");
+	
+	//totalQDCanglecan2
+	totalQDCanglecan2->Divide(3,2);
+	
+	totalQDCanglecan2->cd(1);
+	totalQDCangleTwo->Draw("colz");
+	
+	TH1D *totalQDCangleprojy2 = totalQDCangleTwo->ProjectionY("totalqdcangle2",1,180);
+	totalQDCanglecan2->cd(4);
+	totalQDCangleprojy2->SetTitle("Projection Y");
+	totalQDCangleprojy2->SetYTitle("Count");
+	totalQDCangleprojy2->Draw("bar");
+	
+	totalQDCanglecan2->cd(2);
+	totalQDCangleThree->Draw("colz");
+	
+	totalQDCanglecan2->cd(5);
+	TH1D *totalQDCangleprojy3 = totalQDCangleThree->ProjectionY("totalqdcangle3",1,180);
+	totalQDCangleprojy3->SetTitle("Projection Y");
+	totalQDCangleprojy3->SetYTitle("Count");
+	totalQDCangleprojy3->Draw("bar");
+	
+	totalQDCanglecan2->cd(3);
+	totalQDCangleFour->Draw("colz");
+	
+	totalQDCanglecan2->cd(6);
+	TH1D *totalQDCangleprojy4 = totalQDCangleFour->ProjectionY("totalqdcangle4",1,180);
+	totalQDCangleprojy4->SetTitle("Projection Y");
+	totalQDCangleprojy4->SetYTitle("Count");
+	totalQDCangleprojy4->Draw("bar");
+	
+	//totalQDCanglecan3
+	totalQDCanglecan3->Divide(3,2);
+	
+	totalQDCanglecan3->cd(1);
+	totalQDCangleFive->Draw("colz");
+	
+	totalQDCanglecan3->cd(4);
+	TH1D *totalQDCangleprojy5 = totalQDCangleFive->ProjectionY("totalqdcangle5",1,180);
+	totalQDCangleprojy5->SetTitle("Projection Y");
+	totalQDCangleprojy5->SetYTitle("Count");
+	totalQDCangleprojy5->Draw("bar");
+	
+	totalQDCanglecan3->cd(2);
+	totalQDCangleSix->Draw("colz");
+	
+	totalQDCanglecan3->cd(5);
+	TH1D *totalQDCangleprojy6 = totalQDCangleSix->ProjectionY("totalqdcangle6",1,180);
+	totalQDCangleprojy6->SetTitle("Projection Y");
+	totalQDCangleprojy6->SetYTitle("Count");
+	totalQDCangleprojy6->Draw("bar");
+	
+	totalQDCanglecan3->cd(3);
+	totalQDCangleSeven->Draw("colz");
+	
+	totalQDCanglecan3->cd(6);
+	TH1D *totalQDCangleprojy7 = totalQDCangleSeven->ProjectionY("totalqdcangle7",1,180);
+	totalQDCangleprojy7->SetTitle("Projection Y");
+	totalQDCangleprojy7->SetYTitle("Count");
+	totalQDCangleprojy7->Draw("bar");
+	
+	//totalQDCslantcan
+	totalQDCslantcan->Divide(2,1);
+	
+	totalQDCslantcan->cd(1);
+	totalQDCslant->SetXTitle("Slant Depth");
+	totalQDCslant->SetYTitle("total QDC");
+	totalQDCslant->GetYaxis()->SetTitleOffset(1.3);
+	totalQDCslant->Draw("colz");
+	
+	totalQDCslantcan->cd(2);
+	totalQDCslant->FitSlicesY();
+	TH1D *totalQDCslant_0 = (TH1D*)gDirectory->Get("totalQDCslant_0");
+	totalQDCslant_0->Draw();
+	 
 }
 
 void printPlots() {
@@ -1562,6 +1823,22 @@ void printPlots() {
 	char inThrucanprint[150];
 		sprintf(inThrucanprint,"output/plots/inThru.pdf");
 		inThrucan->Print(inThrucanprint,"pdf");
+		
+	char totalQDCanglecanprint[150];
+		sprintf(totalQDCanglecanprint,"output/plots/totalQDCangle.pdf");
+		totalQDCanglecan->Print(totalQDCanglecanprint,"pdf");
+		
+	char totalQDCanglecanprint2[150];
+		sprintf(totalQDCanglecanprint2,"output/plots/totalQDCangle2.pdf");
+		totalQDCanglecan2->Print(totalQDCanglecanprint2,"pdf");
+		
+	char totalQDCanglecanprint3[150];
+		sprintf(totalQDCanglecanprint3,"output/plots/totalQDCangle3.pdf");
+		totalQDCanglecan3->Print(totalQDCanglecanprint3,"pdf");
+		
+	char totalQDCslantcanprint[150];
+		sprintf(totalQDCslantcanprint,"output/plots/totalQDCslant.pdf");
+		totalQDCslantcan->Print(totalQDCslantcanprint,"pdf");
 }
 //--------------------------------------------------------------
 
@@ -1677,7 +1954,8 @@ void VetoDisplay()
 	//lastly, draw and print the plots	
 	drawPlots();
 	printPlots();
-	SlantDepth();
+	//SlantDepth();
+	cout << addedEvents << endl;
 }
 
 int main(int argc, char* argv[]) {
