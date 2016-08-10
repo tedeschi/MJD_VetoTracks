@@ -2,7 +2,7 @@ include $(MGDODIR)/buildTools/config.mk
 include $(MGDODIR)/buildTools/BasicROOTMakefile
 
 # Give the application name, which must be the stem of cc file with 'main'.  
-APPS = landscape
+APPS = SlantDepth
 # The next two lines are important
 SHLIB = 
 ARCHIVE = 
@@ -21,8 +21,8 @@ all: create
 #VetoDisplay.o: VetoDisplay.cc VetoDisplay.hh
 #	g++ -o VetoDisplay.o VetoDisplay.cc -c $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --cflags`
 
-create: landscape.o
-	g++ -o landscape landscape.o $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --libs`
+create: SlantDepth.o
+	g++ -o SlantDepth SlantDepth.o $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --libs`
 
-landscape.o: landscape.cc landscape.hh
-	g++ -o landscape.o landscape.cc -c $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --cflags`
+SlantDepth.o: SlantDepth.cc SlantDepth.hh
+	g++ -o SlantDepth.o SlantDepth.cc -c $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --cflags`

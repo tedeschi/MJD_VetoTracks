@@ -3,6 +3,7 @@
 \usepackage{graphicx}
 \usepackage{courier}
 \usepackage{float}
+\usepackage{gensymb}
 \graphicspath{ {./} }
 \begin{document}
 
@@ -15,11 +16,11 @@ Bradley McClain and Dr. David Tedeschi, University of South Carolina
 \pagebreak
 
 \textbf{Summary:} \\
-The goal of the Veto System analysis was to create plots and models visualizing the output of the 32 Veto detectors using Cern's Root. A stand alone program compiling with Root and MGDO libraries creates an executable file that can be run from the command line. Executing this file with detector data produces PDF files depicting the Veto panels with realistic geometry, lighting up the panels that were hit with different colors based on received QDC with each individual event. If two layers of panels are hit at the same time, a track of the particle is drawn and it's coordinates of the vector are given. Alongside the wireframe, the program creates plots of the event data with things such as number of panels hit per event, how many times each individual panel was hit, and more. Individual events can be displayed in a rotatable 3-D model.
+The goal of the Veto System analysis was to create plots and models visualizing the output of the 32 Veto detectors using Cern's Root. A stand alone program compiling with Root and MGDO libraries creates an executable file that can be run from the command line. Executing this file with detector data produces PDF files depicting the Veto panels with realistic geometry, lighting up the panels that were hit with different colors based on received QDC with each individual event. If two layers of panels are hit at the same time, a track of the particle is drawn and it's coordinates of the vector are given. Alongside the wireframe, the program creates plots of the event data with things such as number of panels hit per event, how many times each individual panel was hit, and more. Individual events can be displayed in a rotatable 3-D model. The program can also calculate the slant depth of a particle's path using topological data of an area around the MJD experiment.
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.5]{assembly95.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.0\textwidth]{assembly95.pdf}}%
 \end{figure}
 
 \pagebreak
@@ -63,7 +64,7 @@ Declared globally are canvases, each with their own theme, holding groups of plo
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{graphs.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{graphs.pdf}}%
 \end{figure}
 
 \textbf{\emph{Number of panels hit per event}:}  \\
@@ -72,11 +73,11 @@ This plot describes the total amount of panels hit per event. For each QDC value
 \textbf{\emph{Times each panel hit}:} \\
 This plot describes how many times each individual panel was hit. Filled by looping through the QDC values and adding any panel above 0 QDC.
 
-\textbf{\emph{QDC per panel for all hits}:} \\
-This plot describes how much QDC each panel received per event for every event. Filled by looping through the QDC values and adding any QDC value above 0 QDC.
-
 \textbf{\emph{Multiplicity vs QDC total}:} \\
 This plot describes how many panels were hit per event versus the total added QDC of that event. Filled with the numberOfPanelsHit and totalQDC variables.
+
+\textbf{\emph{QDC per panel for all hits}:} \\
+This plot describes how much QDC each panel received per event for every event. Filled by looping through the QDC values and adding any QDC value above 0 QDC.
 
 \textbf{\emph{QDC per panel for 2 panels hit}:} \\
 This plot describes the how much QDC each panel received per event for events with only two panels hit. Filled by looping through the QDC values and adding any QDC value and panel number above 0 QDC if it was a two panel event.
@@ -87,7 +88,7 @@ This plot describes how much QDC each panel received per event for events with o
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{Projections.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.0\textwidth]{Projections.pdf}}%
 \end{figure}
 
 \textbf{\emph{Panels hit vs Multiplicity}:} \\
@@ -105,7 +106,7 @@ This plot describes the total added QDC per event for all events. Filled with th
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{QDCtotal.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{QDCtotal.pdf}}%
 \end{figure}
 
 \textbf{\emph{QDC total for all hits}:} \\
@@ -120,7 +121,7 @@ This plot describes the total added QDC per event for events with only four pane
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{qdcDisplay.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{qdcDisplay.pdf}}%
 \end{figure}
 
 \textbf{\emph{QDC per panel for all hits}:} \\
@@ -144,7 +145,7 @@ An x-axis projection of \emph{QDC per panel for 4 panels hit} plot.
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{QDCtotaln.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{QDCtotaln.pdf}}%
 \end{figure}
 
 \textbf{\emph{QDC total for n panels hit}:} \\
@@ -153,7 +154,7 @@ These series of plots describe the total added QDC per event for each event with
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{thetaPhi.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{thetaPhi.pdf}}%
 \end{figure}
 
 \textbf{\emph{Theta vs. Phi for top and bottom n=4 layer hits}:} \\
@@ -168,7 +169,7 @@ An x-axis projection of \emph{Theta vs. Phi for top and bottom n=4 layer hits} p
 \pagebreak
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.8]{cosThetaPhi.pdf}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{cosThetaPhi.pdf}}%
 \end{figure}
 
 \textbf{\emph{Cos(Theta) vs. Phi for top and bottom n=4 layer hits}:} \\
@@ -188,11 +189,11 @@ The input file should be delimited by spaces and in the form: \\
 \texttt{runNumber entry eventCount scalerTime QDCvaluePanel1 QDCvaluePanel2 ... QDCvaluePanel32} \\
 ex. \\
 \texttt{9959 14359 1037 3003.45 0 0 0 0 1283 0 0 1407 0 0 0 0 0 0 0 0 0 1556 0 0 0 968 0 0 0 0 0 0 0 0 0 0 } \\
-The program opens the input file and loops through each event. For an individual event, if the QDC value (stored in an array of size 32) is greater than 0, numberOfPanelsHit variable is incremented by 1, and the value is added to the totalQDC variable. Any missing panels (if less than 32 panels were given) are filled with a value of 0 QDC. With the necessary variables, drawEvent and fillPlots are called to draw the wireframe model and fill each plot with the event data. 
+The program opens the input file and loops through each event. Acceptable panel formats are 1-32 or 1-24, all others are not used. For an individual event, if the QDC value (stored in an array of size 32) is greater than 0, numberOfPanelsHit variable is incremented by 1, and the value is added to the totalQDC variable. Any missing panels (if less than 24 panels were given) are filled with a value of 0 QDC. With the necessary variables, drawEvent and fillPlots are called to draw the wireframe model and fill each plot with the event data. 
 
 After the program has looped through all the events, a heatmap of all the hits are drawn. This is accomplished by summing all the QDC values per panel for every event, multiplying it by a scale factor, and calling drawEvent one last time with the scaled values. The scale factor is denoted by: \\
 \texttt{scaleFactor = (MaxColorValue - MinColorValue) / (maxSumValue - minSumValue)} \\
-The heatmap is created as a PDF and the drawPlots and printPlots functions are called to generate and print the plots as a PDF file.
+The heatmap is created as a PDF and the drawPlots and printPlots functions are called to edit,draw, and print the plots as a PDF file.
 
 The 0-31 panel numbering format is used in all programming aspects, but is displayed on the text box and plots in the 1-32 format, to mitigate confusion.
 
@@ -205,60 +206,46 @@ The hitLocation function is used for getting the location of a layer hit in the 
 
 The hitFinder function is used to get a 3-D rotatable model of an individual event. The function opens with Root's TApplication classes. A canvas is drawn after the run number and event count is found, and is automatically put on the TApplication window. Finally, the application is run. To access the hitFinder function, run the executable with ./VetoDisplay runNumber eventCount \\
 
-\textbf{Landscape:} \\
-Using topological data, the landscape program generates two main plots of slant depth, one with Cartesian coordinates in meters, and the other with polar coordinates, named slantHist and thetaPhiHist, respectively. Two nested 'for' loops get the coordinates of the center of each bin of the topology chart. The height at each location is fetched, and phi, theta, and slant depth are calculated for each position.
-Phi is adjusted for each quadrant and the graphs are filled. The cosine of theta is taken and filled to a plot as well. An X and Y projection are taken of thetaPhiHist and slantHist and added to a canvas. Each graph is edited, drawn, printed, and written to a root file. \\
+\textbf{Slant Depth:} \\
+Using topological data, the SlantDepth program allows one to input the phi and theta of a particle's path and get out the distance the particle traveled through the ground. The program can also generate a histogram of the slant depth in the area surrounding the MJD experiment. The slant depth is calculated using a "shooting" method. First, an initial value of r(slant depth) is assumed. With the polar coordinates given, x, y, and z Cartesian coordinates are calculated at the tip of the r vector, with it's initial point being the MJD location. If the vector is below the surface, a $\Delta$r is added to the assumed value of r. If the vector is above the surface, a $\Delta$r is subtracted from the assumed value of r. When the vector passes through the surface, the $\Delta$r is halved. r is added and subtracted from until it is within $\epsilon$1m of the surface. When going from one bin to another, the surface height has an abrupt jump, so when the vector is within $\epsilon$10m of the surface and near a bin edge, a line is drawn from the center of the two bins. The new line becomes the assumed surface height. Three histograms are made in the ranges of 0-90 theta, 0-60 theta, and 60-90 theta. They are edited, drawn, written to a root file, and finally printed. \\
 \textbf{Calculations:} \\
 
+$$xAtrTip=cos(Phi) * sin(Theta) * r$$
+$$yAtrTip=sin(Phi) * sin(Theta) * r$$
+$$zAtrTip=(heightAt0 - MJDDEPTH) + r*cos(Theta)$$
+
 \begin{figure}[H]
-\makebox[\textwidth][c]{\includegraphics[width=1.6\textwidth]{surfCalc2.pdf}}%
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantDepthFig.pdf}}%
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{freeform_thetaphi3.pdf}}%
+\end{figure}
+
+\pagebreak
 \textbf{Plots:} \\
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{slantDepthTop.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantHist.png}}%
 \end{figure}
 
-This plot describes the slant depth in an area around the Majorana demonstrator, which lies at (0,0).
+This plot describes the distance a particle travels through the ground to hit the MJD detectors in an area around the MJD experiment. With given polar coordinates and topological data, we can trace back the path the particle took to arrive at the detectors. 
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{polarAnglesTop.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantLowTheta.png}}%
 \end{figure}
 
-This plot describes the slant depth in an area around the Majorana demonstrator in polar angles theta and phi.
+This plot describes the distance a particle travels through the ground to hit the MJD detectors in an area around the MJD experiment for the range 0-60 theta.
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{polarAnglesTop2.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.3\textwidth]{slantHighTheta.png}}%
 \end{figure}
 
-This plot describes the slant depth in an area around the Majorana demonstrator in polar angles Cos(theta) and phi.
-
-\begin{figure}[H]
-\centering
-\includegraphics[scale=0.3]{axisProjections.png}
-\end{figure}
-
-X and Y axis projections for the slant depth and polar angles plots.
-
-\begin{figure}[H]
-\centering
-\includegraphics[scale=0.3]{Topology.png}
-\end{figure}
-
-The topology chart used to calculate the angles.
-
-\pagebreak
-\textbf{Uncertainty estimate:} \\
-
-\begin{figure}[H]
-\makebox[\textwidth][c]{\includegraphics[width=1.6\textwidth]{errorCalc.pdf}}%
-\end{figure}
-
-\pagebreak
-
+This plot describes the distance a particle travels through the ground to hit the MJD detectors in an area around the MJD experiment for the range 60-90 theta.
 
 \end{document}

@@ -21,6 +21,7 @@
 #include <TColor.h>
 #include <TStyle.h>
 
+#include "TProfile.h"
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
 #include "TGeoMedium.h"
@@ -45,6 +46,7 @@ class VetoDisplay
 		void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t ievent);
 		void drawPlots();
 		void printPlots();
+		int main(int argc, char* argv[]);
 }
 
 #endif
