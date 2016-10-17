@@ -1588,6 +1588,12 @@ void drawPlots() {
 		totalQDCangle->SetXTitle("Degrees theta");
 		totalQDCangle->SetYTitle("Total QDC");
 		totalQDCangle->SetStats(0);
+		
+	TF1 *myfit2 = new TF1("myfit2","[0]*2/cos(x*(pi/180))",0,45);
+	totalQDCanglecan->cd(1);
+		totalQDCangle->SetXTitle("Degrees theta");
+		totalQDCangle->SetYTitle("Total QDC");
+
 		totalQDCangle->GetYaxis()->SetTitleOffset(1.3);
 		myfit2->SetParameter(0,2000);
 		totalQDCangle->Fit("myfit2");
@@ -1867,6 +1873,7 @@ void VetoDisplay()
 		totalQDCsides += qdcVals[eastPanels[q]];
 		totalQDCsides += qdcVals[westPanels[q]];
 	}
+		}
 	}
 	if(totalQDCsides != 0.0) {
 		totalQDCangle->Fill(75, totalQDCsides);
