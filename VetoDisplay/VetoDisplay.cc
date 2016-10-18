@@ -1020,7 +1020,7 @@ TH2D *QDCangleSix = new TH2D("QDCangleSix","32-45 theta slice", 180, 32, 45, 180
 TH2F *QDCslant = new TH2F("QDCslant","QDC vs Slant Depth for top and bottom n=4 layer hits", 100, 1200, 2200, 100, 0, 5000);
 TH2F *thetaSlant = new TH2F("thetaSlant","Theta vs Slant Depth for top and bottom n=4 layer hits",100, 1200, 2200, 100, 0, 45);
 TH2F *inThruHist = new TH2F("inThruHist","Inches particle passed through detector vs QDC val for top panels only", 180, .95, 1.5, 180, 0, 5000);
-TH2D *totalQDCangle = new TH2D("totalQDCangle","Total QDC for top panels vs Theta for top and bottom n=4 layer hits", 180, 0, 45, 180, 0 , 12000);
+TH2D *totalQDCangle = new TH2D("totalQDCangle","Total QDC for top panels vs Theta for top and bottom n=4 layer hits", 180, 0, 90, 180, 0 , 12000);
 TH2D *totalQDCangleTwo = new TH2D("totalQDCangleTwo","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 0-9", 180, 0, 9, 180, 0 , 12000);
 TH2D *totalQDCangleThree = new TH2D("totalQDCangleThree","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 9-13", 180, 9, 13, 180, 0 , 12000);
 TH2D *totalQDCangleFour = new TH2D("totalQDCangleFour","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 13-17", 180, 13, 17, 180, 0 , 12000);
@@ -1098,6 +1098,8 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 			}
 		}
 	}
+	
+	
 	/*
 	//adding 5 panel hit events to data by excluding a panel based on QDC value or not next to others
 	if(numberOfPanelsHit == 5) {
@@ -1581,10 +1583,17 @@ void drawPlots() {
 	//totalQDCanglecan
 	totalQDCanglecan->Divide(2,2);
 	
+	TF1 *myfit2 = new TF1("myfit2","[0]*2/cos(x*(pi/180))",0,90);
+	totalQDCanglecan->cd(1);
+		totalQDCangle->SetXTitle("Degrees theta");
+		totalQDCangle->SetYTitle("Total QDC");
+		totalQDCangle->SetStats(0);
+		
 	TF1 *myfit2 = new TF1("myfit2","[0]*2/cos(x*(pi/180))",0,45);
 	totalQDCanglecan->cd(1);
 		totalQDCangle->SetXTitle("Degrees theta");
 		totalQDCangle->SetYTitle("Total QDC");
+
 		totalQDCangle->GetYaxis()->SetTitleOffset(1.3);
 		myfit2->SetParameter(0,2000);
 		totalQDCangle->Fit("myfit2");
@@ -1853,6 +1862,23 @@ void VetoDisplay()
 			
 			DrawEvent(qdcVals, numberOfPanelsHit, totalQDC, runNumber, eventCount);
 			fillPlots(qdcVals, totalQDC, numberOfPanelsHit, ievent);
+			
+			Double_t totalQDCsides = 0.0;
+	if( (runNumber == 9954 && eventCount == 293) || (runNumber == 9483 && eventCount == 49) || (runNumber == 10015 && eventCount == 1071)
+		|| (runNumber == 9645 && eventCount == 357) || (runNumber == 10124 && eventCount == 465) || (runNumber == 9905 && eventCount == 695)
+		|| (runNumber == 10083 && eventCount == 936) ) {
+	for(int q = 0; q < 4; q++) {
+		totalQDCsides += qdcVals[northPanels[q]];
+		totalQDCsides += qdcVals[southPanels[q]];
+		totalQDCsides += qdcVals[eastPanels[q]];
+		totalQDCsides += qdcVals[westPanels[q]];
+	}
+		}
+	}
+	if(totalQDCsides != 0.0) {
+		totalQDCangle->Fill(75, totalQDCsides);
+	}
+			
 		}
 	}
 	
@@ -1884,7 +1910,7 @@ void VetoDisplay()
 	//lastly, draw and print the plots	
 	drawPlots();
 	printPlots();
-	SlantDepth(); //call this for generating slantDepth graphs
+	//SlantDepth(); //call this for generating slantDepth graphs
 }
 
 int main(int argc, char* argv[]) {

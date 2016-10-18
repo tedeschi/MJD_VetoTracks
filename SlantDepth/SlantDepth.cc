@@ -308,7 +308,7 @@ Double_t shooter(Double_t r) {
 	shooter(r);
 }
 // ---------------------------------------------------------------------
-/* //can run stand alone, but must comment out call at the end of VetoDisplay
+ //can run stand alone, but must comment out call at the end of VetoDisplay
 int main(int argc, char* argv[]) {
 	if(argc == 3) {
 		SlantDepth(argv[1],argv[2]);
@@ -318,4 +318,3 @@ int main(int argc, char* argv[]) {
 	}
 	return 0;
 }
-*/
