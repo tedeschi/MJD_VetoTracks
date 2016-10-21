@@ -9,7 +9,6 @@
 // (careful, dangourous command if used from any other directory)
 //-----------------------------------------------------------------------
 #include "VetoDisplay.hh"
-#include "../SlantDepth/SlantDepth.cc"
 
 using namespace std;
 
@@ -616,7 +615,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 		}
    }
 
-	if(numOfPlanesHit <= 2 && numberOfPanelsHit == 4 && (bottomSide == 2 || topSide == 2
+	if( (numOfPlanesHit <= 2 && numberOfPanelsHit == 4) && (bottomSide == 2 || topSide == 2
 		|| northSide == 2 || eastSide == 2 || southSide == 2 || westSide == 2) || (numberOfPanelsHit == 5 && topSide == 2 && bottomSide == 2) ) {
 		geom->DrawTracks();
 	}
@@ -1074,9 +1073,10 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 					QDCangleFive->Fill(theta, qdcvals[i]);
 					QDCangleSix->Fill(theta, qdcvals[i]);
 					
-					Double_t slantDepth = SlantDepth(phi,theta);
-					thetaSlant->Fill(slantDepth, theta);
-					QDCslant->Fill(slantDepth, qdcvals[i]);
+					//TODO:: IMPLEMENT SLANT DEPTH THROUGH ROOT FILE, NOT METHOD
+					//Double_t slantDepth = SlantDepth(phi,theta);
+					//thetaSlant->Fill(slantDepth, theta);
+					//QDCslant->Fill(slantDepth, qdcvals[i]);
 					
 					Double_t inThru = 1 / cos(theta * (pi/180)); //the track length through the detectors per panel
 					inThruHist->Fill(inThru, qdcvals[i]);
@@ -1089,7 +1089,7 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 						totalQDCangleFive->Fill(theta, totalQDCtop);
 						totalQDCangleSix->Fill(theta, totalQDCtop);
 						totalQDCangleSeven->Fill(theta, totalQDCtop);
-						totalQDCslant->Fill(slantDepth, totalQDCtop);
+						//totalQDCslant->Fill(slantDepth, totalQDCtop);
 						totalQDCangleFilled = true;
 					}
 				
@@ -1582,18 +1582,18 @@ void drawPlots() {
 	
 	//totalQDCanglecan
 	totalQDCanglecan->Divide(2,2);
-	
+	/*
 	TF1 *myfit2 = new TF1("myfit2","[0]*2/cos(x*(pi/180))",0,90);
 	totalQDCanglecan->cd(1);
 		totalQDCangle->SetXTitle("Degrees theta");
 		totalQDCangle->SetYTitle("Total QDC");
 		totalQDCangle->SetStats(0);
-		
+	*/
+	//TODO:: GENERATE ROOT FILES FOR GRAPHS, MAKE NEW FILE FOR FITTING
 	TF1 *myfit2 = new TF1("myfit2","[0]*2/cos(x*(pi/180))",0,45);
 	totalQDCanglecan->cd(1);
 		totalQDCangle->SetXTitle("Degrees theta");
 		totalQDCangle->SetYTitle("Total QDC");
-
 		totalQDCangle->GetYaxis()->SetTitleOffset(1.3);
 		myfit2->SetParameter(0,2000);
 		totalQDCangle->Fit("myfit2");
@@ -1613,25 +1613,6 @@ void drawPlots() {
 	totalQDCanglecan->cd(3);
 		totalQDCangleprojy->SetTitle("Projection Y");
 		totalQDCangleprojy->SetYTitle("Count");
-	/* //Vavilov fit ---------------------------------------------------
-		struct Vavilov_Func { 
-			Vavilov_Func() {}
-			double operator() (const double *x, const double *p) { 
-				double kappa = p[0]; 
-				double beta2 = p[1];
-				return p[4]*( pdf.Pdf( (x[0]-p[2])/p[3], kappa,beta2) );
-			}
-
-		ROOT::Math::VavilovAccurate pdf; 
-		};
-	
-		Vavilov_Func *func = new Vavilov_Func();
-		TF1 *vav = new TF1("vav",func, 0,12000,5,"Vavilov_Func");
-		vav->SetParameters(0.3,14,totalQDCangleprojy->GetMean(),totalQDCangleprojy->GetRMS(),totalQDCangleprojy->GetEntries());
-		vav->SetParLimits(2000,0,20);
-		vav->SetParLimits(8000,0,2);
-		totalQDCangleprojy->Fit(vav);
-	*/ //---------------------------------------------------------------
 		totalQDCangleprojy->Fit("landau");
 		totalQDCangleprojy->Draw("bar");
 	
@@ -1801,6 +1782,7 @@ void VetoDisplay()
     ifstream VetoHitsFile;
     VetoHitsFile.open(inputFile);
     //TODO: add fileNotFound error, exit
+    // MAIN LOOP -------------------------------------------------------
     while(getline(VetoHitsFile, line)) {
 		ievent++;
 		//getchar();
@@ -1859,29 +1841,30 @@ void VetoDisplay()
 					qdcValSum[i] += qdcVals[i];
 				}
 			}
-			
-			DrawEvent(qdcVals, numberOfPanelsHit, totalQDC, runNumber, eventCount);
-			fillPlots(qdcVals, totalQDC, numberOfPanelsHit, ievent);
-			
-			Double_t totalQDCsides = 0.0;
-	if( (runNumber == 9954 && eventCount == 293) || (runNumber == 9483 && eventCount == 49) || (runNumber == 10015 && eventCount == 1071)
-		|| (runNumber == 9645 && eventCount == 357) || (runNumber == 10124 && eventCount == 465) || (runNumber == 9905 && eventCount == 695)
-		|| (runNumber == 10083 && eventCount == 936) ) {
-	for(int q = 0; q < 4; q++) {
-		totalQDCsides += qdcVals[northPanels[q]];
-		totalQDCsides += qdcVals[southPanels[q]];
-		totalQDCsides += qdcVals[eastPanels[q]];
-		totalQDCsides += qdcVals[westPanels[q]];
-	}
 		}
-	}
-	if(totalQDCsides != 0.0) {
-		totalQDCangle->Fill(75, totalQDCsides);
-	}
-			
-		}
-	}
 	
+			
+		DrawEvent(qdcVals, numberOfPanelsHit, totalQDC, runNumber, eventCount);
+		fillPlots(qdcVals, totalQDC, numberOfPanelsHit, ievent);
+		
+		// hand picked events ------------------------------------------
+		Double_t totalQDCsides = 0.0;
+		if( (runNumber == 9954 && eventCount == 293) || (runNumber == 9483 && eventCount == 49) || (runNumber == 10015 && eventCount == 1071)
+			|| (runNumber == 9645 && eventCount == 357) || (runNumber == 10124 && eventCount == 465) || (runNumber == 9905 && eventCount == 695)
+			|| (runNumber == 10083 && eventCount == 936) ) {
+			for(int q = 0; q < 4; q++) {
+				totalQDCsides += qdcVals[northPanels[q]];
+				totalQDCsides += qdcVals[southPanels[q]];
+				totalQDCsides += qdcVals[eastPanels[q]];
+				totalQDCsides += qdcVals[westPanels[q]];
+			}
+		}
+		if(totalQDCsides != 0.0) {
+			totalQDCangle->Fill(75, totalQDCsides);
+		}
+		// -------------------------------------------------------------
+	}
+	// MAIN LOOP END ---------------------------------------------------
 	
 	// send qdcValSum as last picture
 	minvalsum = qdcValSum[0]; //min equal to first value in sums to allow for comparison
@@ -1910,7 +1893,6 @@ void VetoDisplay()
 	//lastly, draw and print the plots	
 	drawPlots();
 	printPlots();
-	//SlantDepth(); //call this for generating slantDepth graphs
 }
 
 int main(int argc, char* argv[]) {

@@ -4,7 +4,6 @@
 
 //-----------------------------------------------------------------------
 #include "SlantDepth.hh"
-#include "../VetoDisplay/VetoDisplay.hh"
 
 using namespace std;
 
@@ -13,6 +12,7 @@ Double_t slantTheta = 0.0;
 static Double_t PI = 3.14159265;
 static Double_t EPSILON = 1.0;
 static Double_t MJDDEPTH = 1478.0; //in meters
+static Double_t TRUENORTH = 7.0; //true north in degrees
 Double_t r = 1478.0; //initial guess
 Double_t deltar = 10; //how much r is incremented by
 Double_t diffOld = 0.0;
@@ -43,33 +43,33 @@ void SlantDepth() {
 	//filling 0-90 theta histo -----------------------------------------
 	for(int i = 0; i < 360; i++) {
 		while(thetaStep < 90) {
-			slantPhi = (i) * (PI/180);
+			slantPhi = (i) * (PI/180) + TRUENORTH;
 			slantTheta = thetaStep * (PI/180);
 			r = 1478.0;
 			deltar = 10;
 			diffNew = 0.0;
 			diffOld = 0.0;
-			counter = 0;
+			//counter = 0;
 			slantHist->Fill(i,thetaStep,shooter(r));
 			//deltatheta = log(91-thetaStep)/4;
 			deltatheta = 1;
 			thetaStep += deltatheta;
 			//cout << thetaStep << " ";
-			counter2++;
-			if(counter2 == 140) {
-				break;
-			}
+			//counter2++;
+			//if(counter2 == 140) {
+			//	break;
+			//}
 			//thetaStep++;
 		}
 		cout << i << endl;
 		thetaStep = 0;
-		counter2 = 0;
+		//counter2 = 0;
 	}
 
 	//filling 0-60 theta histo -----------------------------------------
 	for(double counteri1 = 0; counteri1 < 360; counteri1+=0.5) {
 		for(double counterj1 = 0; counterj1 < 60; counterj1+=0.5) {
-			slantPhi = (counteri1) * (PI/180);
+			slantPhi = (counteri1) * (PI/180) + TRUENORTH;
 			slantTheta = counterj1 * (PI/180);
 			r = 1478.0;
 			deltar = 10;
@@ -86,7 +86,7 @@ void SlantDepth() {
 	//filling 60-90 theta histo ----------------------------------------
 	for(double counteri2 = 0; counteri2 < 360; counteri2+=0.5) {
 		for(double counterj2 = 60; counterj2 < 90; counterj2+=0.5) {
-			slantPhi = (counteri2) * (PI/180);
+			slantPhi = (counteri2) * (PI/180) + TRUENORTH;
 			slantTheta = counterj2 * (PI/180);
 			r = 1478.0;
 			deltar = 10;
@@ -170,22 +170,10 @@ void SlantDepth(char* innum1, char* innum2) {
 	
 	
 	if(validNum1 == true && validNum2 == true) {
-		slantPhi = (slantPhi) * (PI/180); //cos and sin need to be input in rads
+		slantPhi = (slantPhi) * (PI/180) + TRUENORTH; //cos and sin need to be input in rads
 		slantTheta = slantTheta * (PI/180);
 		cout << "Slant Depth: " << shooter(r) << endl;
 	}
-}
-
-//implementation for VetoDisplay
-Double_t SlantDepth(Double_t phiin, Double_t thetain) {
-	slantPhi = (phiin) * (PI/180);
-	slantTheta = thetain * (PI/180);
-	r = 1478.0;
-	deltar = 10;
-	diffNew = 0.0;
-	diffOld = 0.0;
-	counter = 0;
-	return shooter(r);
 }
 
 //recursive method -----------------------------------------------------
@@ -308,7 +296,6 @@ Double_t shooter(Double_t r) {
 	shooter(r);
 }
 // ---------------------------------------------------------------------
- //can run stand alone, but must comment out call at the end of VetoDisplay
 int main(int argc, char* argv[]) {
 	if(argc == 3) {
 		SlantDepth(argv[1],argv[2]);

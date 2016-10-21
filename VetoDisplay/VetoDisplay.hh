@@ -21,7 +21,6 @@
 #include <TColor.h>
 #include <TStyle.h>
 
-#include "Math/VavilovAccurate.h"
 #include "TProfile.h"
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
