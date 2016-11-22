@@ -1,10 +1,10 @@
-// VetoAnalysis.cc
+// VetoDisplay.cc
 // macro to analyze Majorana Data
 // David J Tedeschi, Clint Wiseman and Bradley McClain, University of South Carolina
 //
 // .x VetoDisplay.C++
 // to clear output all output subdirectories:
-// cd to the main output directory "assembly_output" and use the command:
+// cd to the main output directory "output" and use the command:
 // find . ! -type d -exec rm '{}' \;
 // (careful, dangourous command if used from any other directory)
 //-----------------------------------------------------------------------
@@ -17,6 +17,9 @@ string inputFile = "../Data/vetoskims/vList_DS1_1-6.txt"; //EDIT THIS FOR INPUT 
 int isNextTo(int panel1, int panel2);
 int isLayerHit(int panel1, int panel2);
 std::vector<Double_t> hitLocation(int panel1, int panel2);
+Double_t interpolatedSlant(Double_t aPhi, Double_t aTheta);
+void ReverseXAxis (TH1 *h);
+void ReverseYAxis (TH1 *h);
 
 //method for coloring the wireframe based on recived QDC per panel
 int coloring(int qdc,int mode){
@@ -83,6 +86,7 @@ TCanvas *ecan;
 //Phi & Theta global to allow for plotting
 Double_t phi;
 Double_t theta;
+Double_t slantValue;
 static Double_t pi = 3.1415926535897;
 //---------------------------------------------------------------------------------------------------------------------
 void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t runNumber, Int_t eventCount)
@@ -244,7 +248,6 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	    mcscoords[17+i][0] = 0;
 	    mcscoords[17+i][1] = ypos;
 	    mcscoords[17+i][2] = northxlayerinner+3*zlayer -(westxlayerouter-westxlayerinner) -(eastxlayerouter-westxlayerouter);
-
 		
 		xpanel = topxlayerlower;
 		ypanel = topylayerlower/2.;
@@ -257,6 +260,7 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 	    mcscoords[20+i][0] = ypos;
 	    mcscoords[20+i][1] = 0;
 	    mcscoords[20+i][2] = northxlayerinner+3*zlayer -(westxlayerouter-westxlayerinner) -(eastxlayerouter-westxlayerouter);
+	  
   	}
   	// add top layers to mother
   	top->AddNode(layert1,1, new TGeoTranslation(2*zlayer,0,northxlayerinner+3*zlayer -(westxlayerouter-westxlayerinner) -(eastxlayerouter-westxlayerouter)));
@@ -698,6 +702,14 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 			phi += 360; //makes negative phi's the correct positive
 		}
 		
+		slantValue = interpolatedSlant(phi, theta);
+		
+		if(theta < 15 && theta > 14.75) {
+			cout << "phi: " << phi << endl;
+			cout << "theta: " << theta << endl;
+			cout << "slantDepth: " << slantValue << endl;
+		}
+		
 		//check if the track went through the cryostats; -------
 		bool passedThroughCryo = false;
 		Double_t degrad = pi/180;
@@ -739,7 +751,6 @@ void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t r
 		char thetaout[150];
 		sprintf(thetaout,"Theta: %.1f deg",theta);
 		pt->AddText(thetaout);
-		
 	}
 	
 	pt->Draw();
@@ -859,6 +870,15 @@ std::vector<Double_t> hitLocation(int panel1, int panel2) {
 	return drawCoords;
 }
 
+Double_t interpolatedSlant(Double_t aPhi, Double_t aTheta) {
+	TFile *f = new TFile("../SlantDepth/output/slantHist.root");
+	TH2F *h = (TH2F*)f->Get("slantHist");
+	
+	Double_t slantDepth = h->Interpolate(aPhi, aTheta);
+	f->Close();
+	return slantDepth;
+}
+
 //Finds the user's input hit and displays it in 3-D with application.
 void hitFinder(char* innum1, char* innum2) {
 	
@@ -973,7 +993,6 @@ void hitFinder(char* innum1, char* innum2) {
 }
  
 //--------------------------------------------------------------
-
 //global canvas and graph declarations
 TCanvas *graphs = new TCanvas("graphs","Analysis graphs", 900, 0, 900, 600);
 TCanvas *QDCcanvas = new TCanvas("QDC","QDC", 900, 0, 900, 600);
@@ -991,6 +1010,7 @@ TCanvas *totalQDCanglecan = new TCanvas("totalQDCanglecan"," ", 1200, 800);
 TCanvas *totalQDCanglecan2 = new TCanvas("totalQDCanglecan2"," ", 1200, 800);
 TCanvas *totalQDCanglecan3 = new TCanvas("totalQDCanglecan3"," ", 1200, 800);
 TCanvas *totalQDCslantcan = new TCanvas("totalQDCslantcan"," ", 1600, 700);
+TCanvas *angleOverview = new TCanvas("angleOverview", " ", 1200, 800);
 
 TH1F *graph1 = new TH1F("graph1","Number of panels hit per event", 65, 0, 33);
 TH1F *graph2 = new TH1F("graph2","Times each panel hit", 65, 0, 33);
@@ -1026,7 +1046,18 @@ TH2D *totalQDCangleFour = new TH2D("totalQDCangleFour","Total QDC for top panels
 TH2D *totalQDCangleFive = new TH2D("totalQDCangleFive","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 17-23", 180, 17, 23, 180, 0 , 12000);
 TH2D *totalQDCangleSix = new TH2D("totalQDCangleSix","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 23-32", 180, 23, 32, 180, 0 , 12000);
 TH2D *totalQDCangleSeven = new TH2D("totalQDCangleSeven","Total QDC for top panels vs Theta for top and bottom n=4 layer hits 32-45", 180, 32, 45, 180, 0 , 12000);
+//TH1D *totalQDCangleprojy2 = totalQDCangleTwo->ProjectionY("totalqdcangle2",1,180);
+//TH1D *totalQDCangleprojy3 = totalQDCangleThree->ProjectionY("totalqdcangle3",1,180);
+//TH1D *totalQDCangleprojy4 = totalQDCangleFour->ProjectionY("totalqdcangle4",1,180);
+//TH1D *totalQDCangleprojy5 = totalQDCangleFive->ProjectionY("totalqdcangle5",1,180);
+//TH1D *totalQDCangleprojy6 = totalQDCangleSix->ProjectionY("totalqdcangle6",1,180);
+//TH1D *totalQDCangleprojy7 = totalQDCangleSeven->ProjectionY("totalqdcangle7",1,180);
 TH2F *totalQDCslant = new TH2F("totalQDCslant","Total QDC vs Slant Depth for top and bottom n=4 layer hits", 180, 1200, 2200, 180, 0, 12000);
+TH1F *allSlantsHist = new TH1F("allSlantsHist","Slant depth for all top and bottom n=4 layer hits", 200, 1400, 2200);
+TH2F *northWestTop = new TH2F("northWestTop","northWestTop", 14, -6.5, -0.5, 14, -12.5, -6.5);
+TH2F *northEastTop = new TH2F("northEastTop","northEastTop", 14, -6.5, -0.5, 14, -12.5, -6.5);
+TH2F *southWestTop = new TH2F("southWestTop","southWestTop", 14, -6.5, -0.5, 14, -12.5, -6.5);
+TH2F *southEastTop = new TH2F("southEastTop","southEastTop", 14, -6.5, -0.5, 14, -12.5, -6.5);
 	
 //fills all plots and prints out wireframe pdfs
 void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t ievent) {
@@ -1073,11 +1104,6 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 					QDCangleFive->Fill(theta, qdcvals[i]);
 					QDCangleSix->Fill(theta, qdcvals[i]);
 					
-					//TODO:: IMPLEMENT SLANT DEPTH THROUGH ROOT FILE, NOT METHOD
-					//Double_t slantDepth = SlantDepth(phi,theta);
-					//thetaSlant->Fill(slantDepth, theta);
-					//QDCslant->Fill(slantDepth, qdcvals[i]);
-					
 					Double_t inThru = 1 / cos(theta * (pi/180)); //the track length through the detectors per panel
 					inThruHist->Fill(inThru, qdcvals[i]);
 				
@@ -1090,6 +1116,7 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 						totalQDCangleSix->Fill(theta, totalQDCtop);
 						totalQDCangleSeven->Fill(theta, totalQDCtop);
 						//totalQDCslant->Fill(slantDepth, totalQDCtop);
+						allSlantsHist->Fill(slantValue);
 						totalQDCangleFilled = true;
 					}
 				
@@ -1140,6 +1167,28 @@ void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t i
 				thetaPhi->Fill(phi, theta);
 				Double_t costheta = cos(theta / (180/pi));	
 				costhetaPhi->Fill(phi, costheta);
+				
+				int layerPartner = 0;
+				for(int k = 0; k < 32; k++) { //find the corresponding bottom layer
+					if( (isLayerHit(i, k) == 1) && (qdcvals[k] != 0) ) {
+						layerPartner = k;
+					}
+				}
+				
+				//toppanels = 17,18,20,21
+				if( (qdcvals[18] != 0) && (qdcvals[21] != 0) ) { //northwest top
+					northWestTop->Fill(-(i+1), -(layerPartner+1));
+				}
+				if( (qdcvals[17] != 0) && (qdcvals[21] != 0) ) { //northeast top
+					northEastTop->Fill(-(i+1), -(layerPartner+1));
+				}
+				if( (qdcvals[18] != 0) && (qdcvals[20] != 0) ) { //southwest top
+					southWestTop->Fill(-(i+1), -(layerPartner+1));
+				}
+				if( (qdcvals[17] != 0) && (qdcvals[20] != 0) ) { //southeast top
+					southEastTop->Fill(-(i+1), -(layerPartner+1));
+				}
+				
 				filled = true;
 			}
 		}
@@ -1534,8 +1583,13 @@ void drawPlots() {
 		QDCangleprojySix->Draw("bar");
 	
 	//drawing QDCslantcan
-	QDCslantcan->Divide(2,2);
+	QDCslantcan->Divide(1,1);
 	
+	QDCslantcan->cd(1);
+		allSlantsHist->SetXTitle("Slant Depth(meters)");
+		allSlantsHist->SetYTitle("Count");
+		allSlantsHist->Draw("bar");
+	/*
 	QDCslantcan->cd(1);
 		QDCslant->SetYTitle("QDC per panel");
 		QDCslant->GetYaxis()->SetTitleOffset(1.45);
@@ -1554,6 +1608,7 @@ void drawPlots() {
 		QDCslantcanprofilex->GetYaxis()->SetTitleOffset(1.3);
 		QDCslantcanprofilex->GetYaxis()->SetRangeUser(0.,5000.);
 		QDCslantcanprofilex->Fit("pol1");
+	*/
 	
 	//drawing inThrucan
 	inThrucan->Divide(2,2);
@@ -1589,7 +1644,6 @@ void drawPlots() {
 		totalQDCangle->SetYTitle("Total QDC");
 		totalQDCangle->SetStats(0);
 	*/
-	//TODO:: GENERATE ROOT FILES FOR GRAPHS, MAKE NEW FILE FOR FITTING
 	TF1 *myfit2 = new TF1("myfit2","[0]*2/cos(x*(pi/180))",0,45);
 	totalQDCanglecan->cd(1);
 		totalQDCangle->SetXTitle("Degrees theta");
@@ -1617,6 +1671,8 @@ void drawPlots() {
 		totalQDCangleprojy->Draw("bar");
 	
 	//totalQDCanglecan2
+	TFile *f2 = new TFile("output/changeMyName.root","NEW");
+	
 	totalQDCanglecan2->Divide(3,2);
 	
 	totalQDCanglecan2->cd(1);
@@ -1627,6 +1683,8 @@ void drawPlots() {
 		totalQDCangleprojy2->SetTitle("Projection Y");
 		totalQDCangleprojy2->SetYTitle("Count");
 		totalQDCangleprojy2->Draw("bar");
+		totalQDCangleprojy2->Write();
+		
 	
 	totalQDCanglecan2->cd(2);
 		totalQDCangleThree->Draw("colz");
@@ -1636,7 +1694,8 @@ void drawPlots() {
 		totalQDCangleprojy3->SetTitle("Projection Y");
 		totalQDCangleprojy3->SetYTitle("Count");
 		totalQDCangleprojy3->Draw("bar");
-	
+		totalQDCangleprojy3->Write();
+
 	totalQDCanglecan2->cd(3);
 		totalQDCangleFour->Draw("colz");
 	
@@ -1645,6 +1704,7 @@ void drawPlots() {
 		totalQDCangleprojy4->SetTitle("Projection Y");
 		totalQDCangleprojy4->SetYTitle("Count");
 		totalQDCangleprojy4->Draw("bar");
+		totalQDCangleprojy4->Write();
 	
 	//totalQDCanglecan3
 	totalQDCanglecan3->Divide(3,2);
@@ -1657,6 +1717,7 @@ void drawPlots() {
 		totalQDCangleprojy5->SetTitle("Projection Y");
 		totalQDCangleprojy5->SetYTitle("Count");
 		totalQDCangleprojy5->Draw("bar");
+		totalQDCangleprojy5->Write();
 	
 	totalQDCanglecan3->cd(2);
 		totalQDCangleSix->Draw("colz");
@@ -1666,6 +1727,7 @@ void drawPlots() {
 		totalQDCangleprojy6->SetTitle("Projection Y");
 		totalQDCangleprojy6->SetYTitle("Count");
 		totalQDCangleprojy6->Draw("bar");
+		totalQDCangleprojy6->Write();
 	
 	totalQDCanglecan3->cd(3);
 		totalQDCangleSeven->Draw("colz");
@@ -1675,6 +1737,9 @@ void drawPlots() {
 		totalQDCangleprojy7->SetTitle("Projection Y");
 		totalQDCangleprojy7->SetYTitle("Count");
 		totalQDCangleprojy7->Draw("bar");
+		totalQDCangleprojy7->Write();
+		
+		f2->Close();
 	
 	//totalQDCslantcan
 	totalQDCslantcan->Divide(2,1);
@@ -1689,7 +1754,84 @@ void drawPlots() {
 		totalQDCslant->FitSlicesY();
 		TH1D *totalQDCslant_0 = (TH1D*)gDirectory->Get("totalQDCslant_0");
 		totalQDCslant_0->Draw();
-	 
+		
+	//angleOverview canvas
+	angleOverview->Divide(2,2);
+	
+	angleOverview->cd(1);
+	//northEastTop->GetYaxis()->SetLimits(7,13);
+	northEastTop->SetStats(0);
+	northEastTop->Draw("box");
+	angleOverview->DrawFrame(-7, -12.5, -0.5, -6.5,"North East Top");
+	northEastTop->Draw("samebox");
+	//ReverseXAxis(northEastTop);
+	//ReverseYAxis(northEastTop);
+	
+	angleOverview->cd(2);
+	//northWestTop->GetYaxis()->SetLimits(7,13);
+	northWestTop->SetStats(0);
+	northWestTop->Draw("box");
+	angleOverview->DrawFrame(-6.5, -12.5, -0.5, -6.5,"North West Top");
+	northWestTop->Draw("samebox");
+	//ReverseXAxis(northWestTop);
+	//ReverseYAxis(northWestTop);
+	
+	angleOverview->cd(3);
+	//southEastTop->GetYaxis()->SetLimits(7,13);
+	//southEastTop->GetYaxis()->SetRange(6.5,12.5);
+	southEastTop->SetStats(0);
+	southEastTop->Draw("box");
+	angleOverview->DrawFrame(-6.5, -12.5, -0.5, -6.5,"South East Top");
+	southEastTop->Draw("samebox");
+	//ReverseXAxis(southEastTop);
+	//ReverseYAxis(southEastTop);
+	
+	angleOverview->cd(4);
+	//southWestTop->GetYaxis()->SetLimits(7,13);
+	southWestTop->SetStats(0);
+	southWestTop->Draw();
+	angleOverview->DrawFrame(-6.5, -12.5, -0.5, -6.5,"South West Top");
+	southWestTop->Draw("samebox");
+	//ReverseXAxis(southWestTop);
+	//ReverseYAxis(southWestTop);
+}
+
+void ReverseXAxis (TH1 *h)
+{
+   // Remove the current axis
+   h->GetXaxis()->SetLabelOffset(999);
+   h->GetXaxis()->SetTickLength(0);
+
+   // Redraw the new axis
+   gPad->Update();
+   TGaxis *newaxis = new TGaxis(gPad->GetUxmax(),
+                                gPad->GetUymin(),
+                                gPad->GetUxmin(),
+                                gPad->GetUymin(),
+                                h->GetXaxis()->GetXmin(),
+                                h->GetXaxis()->GetXmax(),
+                                510,"-");
+   newaxis->SetLabelOffset(-0.03);
+   newaxis->Draw();
+}
+
+void ReverseYAxis (TH1 *h)
+{
+   // Remove the current axis
+   h->GetYaxis()->SetLabelOffset(999);
+   h->GetYaxis()->SetTickLength(0);
+
+   // Redraw the new axis
+   gPad->Update();
+   TGaxis *newaxis = new TGaxis(gPad->GetUxmin(),
+                                gPad->GetUymax(),
+                                gPad->GetUxmin()-0.001,
+                                gPad->GetUymin(),
+                                h->GetYaxis()->GetXmin(),
+                                h->GetYaxis()->GetXmax(),
+                                510,"+");
+   newaxis->SetLabelOffset(-0.03);
+   newaxis->Draw();
 }
 
 void printPlots() {
@@ -1756,6 +1898,11 @@ void printPlots() {
 	char totalQDCslantcanprint[150];
 		sprintf(totalQDCslantcanprint,"output/plots/totalQDCslant.pdf");
 		totalQDCslantcan->Print(totalQDCslantcanprint,"pdf");
+		
+	char angleOverviewprint[150];
+		sprintf(angleOverviewprint,"output/plots/angleOverview.pdf");
+		angleOverview->Print(angleOverviewprint,"pdf");
+
 }
 //--------------------------------------------------------------
 

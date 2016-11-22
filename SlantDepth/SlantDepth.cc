@@ -13,7 +13,7 @@ static Double_t PI = 3.14159265;
 static Double_t EPSILON = 1.0;
 static Double_t MJDDEPTH = 1478.0; //in meters
 static Double_t TRUENORTH = 7.0; //true north in degrees
-Double_t r = 1478.0; //initial guess
+Double_t slantR = 1478.0; //initial guess
 Double_t deltar = 10; //how much r is incremented by
 Double_t diffOld = 0.0;
 Double_t diffNew = 0.0;
@@ -45,12 +45,12 @@ void SlantDepth() {
 		while(thetaStep < 90) {
 			slantPhi = (i) * (PI/180) + TRUENORTH;
 			slantTheta = thetaStep * (PI/180);
-			r = 1478.0;
+			slantR = 1478.0;
 			deltar = 10;
 			diffNew = 0.0;
 			diffOld = 0.0;
 			//counter = 0;
-			slantHist->Fill(i,thetaStep,shooter(r));
+			slantHist->Fill(i,thetaStep,shooter(slantR));
 			//deltatheta = log(91-thetaStep)/4;
 			deltatheta = 1;
 			thetaStep += deltatheta;
@@ -71,12 +71,12 @@ void SlantDepth() {
 		for(double counterj1 = 0; counterj1 < 60; counterj1+=0.5) {
 			slantPhi = (counteri1) * (PI/180) + TRUENORTH;
 			slantTheta = counterj1 * (PI/180);
-			r = 1478.0;
+			slantR = 1478.0;
 			deltar = 10;
 			diffNew = 0.0;
 			diffOld = 0.0;
 			counter = 0;
-			slantLowTheta->Fill(counteri1,counterj1,shooter(r));
+			slantLowTheta->Fill(counteri1,counterj1,shooter(slantR));
 		}
 		cout << counteri1 << endl;
 	}
@@ -88,12 +88,12 @@ void SlantDepth() {
 		for(double counterj2 = 60; counterj2 < 90; counterj2+=0.5) {
 			slantPhi = (counteri2) * (PI/180) + TRUENORTH;
 			slantTheta = counterj2 * (PI/180);
-			r = 1478.0;
+			slantR = 1478.0;
 			deltar = 10;
 			diffNew = 0.0;
 			diffOld = 0.0;
 			counter = 0;
-			slantHighTheta->Fill(counteri2,counterj2,shooter(r));
+			slantHighTheta->Fill(counteri2,counterj2,shooter(slantR));
 		}
 		cout << counteri2 << endl;
 	}
@@ -172,7 +172,8 @@ void SlantDepth(char* innum1, char* innum2) {
 	if(validNum1 == true && validNum2 == true) {
 		slantPhi = (slantPhi) * (PI/180) + TRUENORTH; //cos and sin need to be input in rads
 		slantTheta = slantTheta * (PI/180);
-		cout << "Slant Depth: " << shooter(r) << endl;
+		Double_t theSlant = shooter(slantR);
+		cout << "Slant Depth: " << theSlant << endl;
 	}
 }
 
@@ -293,7 +294,8 @@ Double_t shooter(Double_t r) {
 	//cout << endl;
 	diffOld = diffNew;
 	counter++;
-	shooter(r);
+	return(shooter(r));
+	
 }
 // ---------------------------------------------------------------------
 int main(int argc, char* argv[]) {

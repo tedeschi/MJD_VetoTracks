@@ -20,6 +20,8 @@
 #include "TBenchmark.h"
 #include <TColor.h>
 #include <TStyle.h>
+#include <TAxis.h>
+#include <TGaxis.h>
 
 #include "TProfile.h"
 #include "TGeoManager.h"
@@ -41,6 +43,7 @@ class VetoDisplay
 		int isNextTo(int panel1, int panel2);
 		int isLayerHit(int panel1, int panel2);
 		std::vector<Double_t> hitLocation(int panel1, int panel2);
+		Double_t interpolatedSlant(Double_t aPhi, Double_t aTheta);
 		void hitFinder(char* innum1, char* innum2);
 		void DrawEvent(Int_t qdcVals[], Int_t numberOfPanelsHit, Int_t totalQDC, Int_t runNumber, Int_t eventCount);
 		void fillPlots(Int_t qdcvals[], Int_t totalQDC, Int_t numberOfPanelsHit, Int_t ievent);
