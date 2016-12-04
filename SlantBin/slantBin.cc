@@ -42,7 +42,7 @@ void slantBin() {
 		if(counter > 37 && counter <= 41) {
 			top.push_back(aCell);
 		}
-		//push back future values here
+		//push back (to the) future values here
 		
 		// ------------------------------
 	}
@@ -68,8 +68,62 @@ void slantBin() {
 	*/
   
 	TFile *f = new TFile("../SlantDepth/output/slantHist.root");
+	TH2F *h = (TH2F*)f->Get("slantLowTheta");
 	
-	TH2F *h2 = (TH2F*)f->Get("slantLowTheta");
+	//now comes the permuation dance
+	map<string, vector<vector<double>>>::iterator it;
+	for (it = topCoords.begin(); it != topCoords.end(); ++it) {
+		vector<vector<double>> tmpvcr = (it->second); //a vector (each of the corners) of vectors (the x,y,z coordinates) for top squares
+		
+		vector<vector<double>> tmpvcr2;
+		map<string, vector<vector<double>>>::iterator it2;
+		for (it2 = bottomCoords.begin(); it2 != bottomCoords.end(); ++it2) {
+			tmpvcr2 = (it2->second);
+			
+			
+			//needs to be done 1000 times
+			double xTopRand; //goal is to generate random numbers between tmpvcr[0][0] and tmpvcr[2][0]
+			double yTopRand; //goal is to generate random numbers between tmpvcr[0][1] and tmpvcr[2][1]
+			double zTop; //just takes tmpvcr[0][2]
+			double xBotRand; //goal is to generate random numbers between tmpvcr2[0][0] and tmpvcr2[2][0]
+			double yBotRand; //goal is to generate random numbers between tmpvcr2[0][1] and tmpvcr2[2][1]
+			double zBot; //just takes tmpvcr[0][2]
+			double lo;
+			double hi;
+			
+			if(tmpvcr[0][0] > tmpvcr[2][0]) {
+				lo = tmpvcr[0][0];
+				hi = tmpvcr[2][0];
+			}
+			else {
+				lo = tmpvcr[2][0];
+				hi = tmpvcr[0][0];
+			}
+			
+			//xTopRand = rand()%(hi-lo+1)+lo;
+			
+			//once we have random numbers we can calculate phi and theta, and interpolate the slantDepth
+			TVector3 r1;
+			TVector3 r2;
+			TVector3 t1;
+			double phi;
+			double theta;
+			r1.SetXYZ(xTopRand,yTopRand,zTop);
+			r2.SetXYZ(xBotRand,yBotRand,zBot);
+			t1 = r2-r1;
+	
+			phi = t1.Phi()*(180/M_PI); //180/pi to get deg rather than rad
+			theta = t1.Theta()*(180/M_PI);
+			
+			double slantDepth = h->Interpolate(phi, theta);
+			
+			//cout << it->first << endl;
+			//cout << tmpvcr[0][0] << " " << tmpvcr[2][0] << endl;
+			//cout << xTopRand << endl;
+		}
+		
+		
+	}
 }
 
 map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse) {
