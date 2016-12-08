@@ -32,6 +32,7 @@
 #include "TApplication.h"
 #include "TGeoCompositeShape.h"
 #include "TGraphErrors.h"
+#include "TRandom.h"
 
 class slantBin
 {
