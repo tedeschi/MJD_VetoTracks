@@ -170,8 +170,8 @@ void slantBin() {
 				double yBotRand=gRandom->Uniform(yblo,ybhi);      //goal is to generate random numbers between tmpvcr2[0][1] and tmpvcr2[2][1]
 				double zBot= tmpvcr2[0][2];                                         //just takes tmpvcr2[0][2]
 
-				hTopXY[idet]->Fill(xTopRand,yTopRand);
-				hBotXY[idet]->Fill(xBotRand,yBotRand);
+				hTopXY[idet]->Fill(-xTopRand,yTopRand);
+				hBotXY[idet]->Fill(-xBotRand,yBotRand);
 		
 				//calculate phi and theta, and interpolate the slantDepth
 				TVector3 r1;
