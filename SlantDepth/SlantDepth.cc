@@ -19,9 +19,7 @@ Double_t diffOld = 0.0;
 Double_t diffNew = 0.0;
 int counter = 0;
 int counter2 = 0;
-//int i = 0;
 Double_t thetaStep = 0;
-//Double_t deltatheta = log(91-thetaStep)/4;
 Double_t deltatheta = 1;
 
 TFile *f = new TFile("../Data/Surf4850_2.85_out.root");
@@ -38,7 +36,7 @@ void SlantDepth() {
 	TH2F *slantHist = new TH2F("slantHist","Slant Depth",360,0,360, 90,0,90);
 	TH2F *slantLowTheta = new TH2F("slantLowTheta","Slant Depth low Theta",720,0,360, 120,0,60);
 	TH2F *slantHighTheta = new TH2F("slantHighTheta","Slant Depth High Theta",720,0,360, 60,60,90);
-	TH2F *lookupHist = new TH2F("lookupHist","lookupHist",nbinx,0,360, nbiny,0,90);
+	//TH2F *lookupHist = new TH2F("lookupHist","lookupHist",nbinx,0,360, nbiny,0,90);
 	
 	//filling 0-90 theta histo -----------------------------------------
 	for(int i = 0; i < 360; i++) {
@@ -49,21 +47,12 @@ void SlantDepth() {
 			deltar = 10;
 			diffNew = 0.0;
 			diffOld = 0.0;
-			//counter = 0;
 			slantHist->Fill(i,thetaStep,shooter(slantR));
-			//deltatheta = log(91-thetaStep)/4;
 			deltatheta = 1;
-			thetaStep += deltatheta;
-			//cout << thetaStep << " ";
-			//counter2++;
-			//if(counter2 == 140) {
-			//	break;
-			//}
-			//thetaStep++;
+			thetaStep += deltatheta;	
 		}
 		cout << i << endl;
 		thetaStep = 0;
-		//counter2 = 0;
 	}
 
 	//filling 0-60 theta histo -----------------------------------------
@@ -98,49 +87,11 @@ void SlantDepth() {
 		cout << counteri2 << endl;
 	}
 	//editing,writing, and drawing histos ------------------------------
-	TCanvas *c1 = new TCanvas("c1","c1",1200,800);
-	TCanvas *c2 = new TCanvas("c2","c2",1200,800);
-	TCanvas *c3 = new TCanvas("c3","c3",1200,800);
-	
-	c1->cd();
-		slantHist->SetStats(0);
-		slantHist->SetXTitle("Phi");
-		slantHist->SetYTitle("Theta");
-		c1->SetLogz();
-		slantHist->Draw("colz");
-	
-	c2->cd();
-		slantLowTheta->SetStats(0);
-		slantLowTheta->SetXTitle("Phi");
-		slantLowTheta->SetYTitle("Theta");
-		//c2->SetLogz();
-		slantLowTheta->Draw("colz");
-		
-	c3->cd();
-		slantHighTheta->SetStats(0);
-		slantHighTheta->SetXTitle("Phi");
-		slantHighTheta->SetYTitle("Theta");
-		c3->SetLogz();
-		slantHighTheta->Draw("colz");
-		
-	
-	TFile *f2 = new TFile("output/slantHist.root","NEW");
+	TFile *f2 = new TFile("output/slantHist.root","RECREATE");
 	slantHist->Write();
 	slantLowTheta->Write();
 	slantHighTheta->Write();
 	
-	char c1print[150];
-    sprintf(c1print,"output/slantHist.png");
-    c1->Print(c1print,"png");
-    
-    char c2print[150];
-    sprintf(c2print,"output/slantLowTheta.png");
-    c2->Print(c2print,"png");
-    
-    char c3print[150];
-    sprintf(c3print,"output/slantHighTheta.png");
-    c3->Print(c3print,"png");
-    
     f2->Close();
 	f->Close();
 }

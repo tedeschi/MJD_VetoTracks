@@ -1,5 +1,4 @@
-#ifndef VetoDisplay_hh
-#define VetoDisplay_hh
+#define SlantDepthGrapher_hh
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,11 +17,8 @@
 #include <TMath.h>
 #include "TBenchmark.h"
 #include <TColor.h>
-#include <TStyle.h>
-#include <TAxis.h>
-#include <TGaxis.h>
 
-#include "TProfile.h"
+#include "TStyle.h"
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
 #include "TGeoMedium.h"
@@ -33,6 +29,3 @@
 #include "TVector3.h"
 #include "TApplication.h"
 #include "TGeoCompositeShape.h"
-
-#endif
-;

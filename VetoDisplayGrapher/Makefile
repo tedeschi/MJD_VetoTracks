@@ -2,7 +2,7 @@ include $(MGDODIR)/buildTools/config.mk
 include $(MGDODIR)/buildTools/BasicROOTMakefile
 
 # Give the application name, which must be the stem of cc file with 'main'.  
-APPS = VetoDisplay
+APPS = VetoDisplayGrapher
 # The next two lines are important
 SHLIB = 
 ARCHIVE = 
@@ -15,8 +15,8 @@ LIBFLAGS = -L$(ROOTSYS)/lib -L$(MGDODIR)/lib -lMGDORoot -lMGDOBase -lMGDOTransfo
 	
 all: create
 	
-create: VetoDisplay.o
-	g++ -o VetoDisplay VetoDisplay.o $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --libs`
+create: VetoDisplayGrapher.o
+	g++ -o VetoDisplayGrapher VetoDisplayGrapher.o $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --libs`
 
-VetoDisplay.o: VetoDisplay.cc VetoDisplay.hh
-	g++ -o VetoDisplay.o VetoDisplay.cc -c $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --cflags`
+VetoDisplayGrapher.o: VetoDisplayGrapher.cc VetoDisplayGrapher.hh
+	g++ -o VetoDisplayGrapher.o VetoDisplayGrapher.cc -c $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --cflags`

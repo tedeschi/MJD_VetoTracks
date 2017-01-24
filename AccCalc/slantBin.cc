@@ -7,6 +7,8 @@
 using namespace std;
 
 map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse);
+bool passThroughSquare(double p1x, double p1y, double p1z, double p2x, 
+		double p2y, double p2z, double sx1, double sx2, double sy1, double sy2, double sz);
 
 void slantBin() {
 	vector<vector<string>> bottom; //the non-parsed vectors read in
@@ -71,42 +73,23 @@ void slantBin() {
 // histogram definitions
 //  
 	TFile *f = new TFile("../SlantDepth/output/slantHist.root");
-	TH2F *h = (TH2F*)f->Get("slantLowTheta");
+	TFile *f2 = new TFile("AccCalc.root","RECREATE");
 
-	TFile *f2 = new TFile("slantBin.root","RECREATE");
+	TH1D *cosThetaPlot = new TH1D("cosThetaPlot","cosThetaUniformDist", 1000, -1, 1);
+	TH2D *xyPlot = new TH2D("xyPlot","xyUniformDist", 1000, -550, 550, 1000, -550, 550);
+	TH2D *upperxyPlot = new TH2D("upperxyPlot","upperxyUniformDist", 1000, -1000, 1000, 1000, -1000, 1000);
 
-	TH1D *hSlantDepth[144];
-	TH2D *hTopXY[144]; 
-	TH2D *hBotXY[144]; 
-	TH2D *hThetaPhi[144];
-	char *histname = new char[20];
-
-	for (int i=0; i<144; i++){
-		sprintf(histname, "hSlantDepth_%d",i);
-		hSlantDepth[i] = new TH1D(histname,histname, 1000, 1400., 2800.);
-		sprintf(histname, "hTopXY_%d",i);
-		hTopXY[i] = new TH2D(histname,histname, 240, -120., 120., 240, -120. , 120.);
-		sprintf(histname, "hBotXY_%d",i);
-		hBotXY[i] = new TH2D(histname,histname, 240, -120., 120., 240, -120. , 120.);
-		sprintf(histname, "hThetaPhi_%d",i);
-		hThetaPhi[i] = new TH2D(histname,histname, 100, 0, 360., 100, 0. , 90.);
-
-	}
-	gRandom->SetSeed(0); // uses time for seed
-	int idet=0;
-	
+	double howManyHits = 0;
+	double howManyTries = 0;
 	//now comes the permuation dance
 	// outer loop for top x,y,z
 	map<string, vector<vector<double>>>::iterator it;
 	for (it = topCoords.begin(); it != topCoords.end(); ++it) {
 		vector<vector<double>> tmpvcr = (it->second); //a vector (each of the corners) of vectors (the x,y,z coordinates) for top squares
-
-		// check top coords
-		//cout << tmpvcr[0][0]<< " " << tmpvcr[2][0] << " " << tmpvcr[0][2] << endl;
-		//cout << tmpvcr[0][1]<< " " << tmpvcr[2][1] << " " << tmpvcr[0][2] << endl;
+		
 		double xtlo,ytlo;
-		double xthi,ythi;
-		double xtmid,ytmid;			
+		double xthi,ythi;	
+		double zTop = tmpvcr[0][2];	
 		if(tmpvcr[0][0] < tmpvcr[2][0]) {
 			xtlo = tmpvcr[0][0];
 			xthi = tmpvcr[2][0];
@@ -115,7 +98,6 @@ void slantBin() {
 			xtlo = tmpvcr[2][0];
 			xthi = tmpvcr[0][0];
 		}
-		xtmid = xtlo + 0.5*(xthi-xtlo);
 
 		if(tmpvcr[0][1] < tmpvcr[2][1]) {
 			ytlo = tmpvcr[0][1];
@@ -125,21 +107,16 @@ void slantBin() {
 			ytlo = tmpvcr[2][1];
 			ythi = tmpvcr[0][1];
 		}
-		ytmid = ytlo + 0.5*(ythi-ytlo);
-
 		
 		//next loop for botton x,y,z
 		vector<vector<double>> tmpvcr2;
 		map<string, vector<vector<double>>>::iterator it2;
 		for (it2 = bottomCoords.begin(); it2 != bottomCoords.end(); ++it2) {
 			tmpvcr2 = (it2->second);
-			
-			//check bottom coords
-			//cout << tmpvcr2[0][0] << " " << tmpvcr2[2][0] << " " << tmpvcr2[0][2] << endl;
-			//cout << tmpvcr2[0][1] << " " << tmpvcr2[2][1] << " " << tmpvcr2[0][2] << endl;
+
 			double xblo,yblo;
-			double xbhi,ybhi;			
-			double xbmid,ybmid;			
+			double xbhi,ybhi;
+			double zBot= tmpvcr2[0][2];		
 			if(tmpvcr2[0][0] < tmpvcr2[2][0]) {
 				xblo = tmpvcr2[0][0];
 				xbhi = tmpvcr2[2][0];
@@ -148,7 +125,6 @@ void slantBin() {
 				xblo = tmpvcr2[2][0];
 				xbhi = tmpvcr2[0][0];
 			}
-			xbmid = xblo + 0.5*(xbhi-xblo);
 			
 			if(tmpvcr2[0][1] < tmpvcr2[2][1]) {
 				yblo = tmpvcr2[0][1];
@@ -158,68 +134,73 @@ void slantBin() {
 				yblo = tmpvcr2[2][1];
 				ybhi = tmpvcr2[0][1];
 			}
-			ybmid = yblo + 0.5*(ybhi-yblo);
 
 			// innermost loop iterates within the top/bot combo
 			for (int i=0;i<100000;i++){
-				double xTopRand=gRandom->Uniform(xtlo,xthi);        //goal is to generate random numbers between tmpvcr[0][0] and tmpvcr[2][0]
-				double yTopRand=gRandom->Uniform(ytlo,ythi);        //goal is to generate random numbers between tmpvcr[0][1] and tmpvcr[2][1]
-				double zTop = tmpvcr[0][2];
-
-				double xBotRand=gRandom->Uniform(xblo,xbhi);      //goal is to generate random numbers between tmpvcr2[0][0] and tmpvcr2[2][0]
-				double yBotRand=gRandom->Uniform(yblo,ybhi);      //goal is to generate random numbers between tmpvcr2[0][1] and tmpvcr2[2][1]
-				double zBot= tmpvcr2[0][2];                                         //just takes tmpvcr2[0][2]
-
-				hTopXY[idet]->Fill(xTopRand,yTopRand);
-				hBotXY[idet]->Fill(xBotRand,yBotRand);
-		
-				//calculate phi and theta, and interpolate the slantDepth
-				TVector3 r1;
-				TVector3 r2;
-				TVector3 t1;
-				double phi;
-				double theta;
-				r2.SetXYZ(xTopRand,yTopRand,zTop);         
-				r1.SetXYZ(xBotRand,yBotRand,zBot);
-				t1 = r2-r1;
-				phi = t1.Phi()*(180/M_PI); //180/pi to get deg rather than rad
-				if(phi < 0) {
-					phi += 360; //makes negative phi's the correct positive
+				//acceptance -------------------------------------------
+				//bottom circle
+				double theX = gRandom->Uniform(-500.0, 500.0); //make a box of radius 5 meters
+				double theY = gRandom->Uniform(-500.0, 500.0);
+				double theZ = -200.0;
+				double outsideBound = pow(theX,2) + pow(theY,2); //eq for the circle inside box
+				while(outsideBound >= pow(500,2)) { //if the point falls outside the circle, select a new one
+					theX = gRandom->Uniform(-500.0, 500.0);  
+					theY = gRandom->Uniform(-500.0, 500.0);
+					outsideBound = pow(theX,2) + pow(theY,2);
 				}
-				theta = t1.Theta()*(180/M_PI);
-				hThetaPhi[idet]->Fill(phi,theta);
 
-				double slantDepth = h->Interpolate(phi, theta);
-				hSlantDepth[idet]->Fill(slantDepth);
-
+				//upper half sphere
+				double theUpperPhi = gRandom->Uniform(0, 360); //uniform distribution?
+				double theUpperTheta = gRandom->Uniform(0, 1);
+				double theUpperX = 500 * cos(theUpperPhi) * sin(theUpperTheta);
+				double theUpperY = 500 * sin(theUpperPhi) * cos(theUpperTheta);
+				double theUpperZ = 500 * cos(theUpperTheta); //polar coordinates from origin
+				theUpperZ = theUpperZ + -200;
+				
+				cosThetaPlot->Fill(theUpperTheta);
+				xyPlot->Fill(theX, theY);
+				upperxyPlot->Fill(theUpperX, theUpperY);
+				
+				//check if the line went through the dets.
+				if(passThroughSquare(theUpperX, theUpperY, theUpperZ, theX, theY, theZ, xtlo, xthi, ytlo, ythi, zTop) == true 
+					&& passThroughSquare(theUpperX, theUpperY, theUpperZ, theX, theY, theZ, xblo, xbhi, yblo, ybhi, zBot) == true) {
+					howManyHits++;
+				}
+				howManyTries++;
+				// -----------------------------------------------------
 			}
-
-			TVector3 r1mid;
-			TVector3 r2mid;
-			TVector3 t1mid;
-			r2mid.SetXYZ(xtmid,ytmid,tmpvcr[0][2]);         
-			r1mid.SetXYZ(xbmid,ybmid,tmpvcr2[0][2]);
-			t1mid = r2mid-r1mid;
-			double phimid;
-			double thetamid;
-
-			phimid = t1mid.Phi()*(180/M_PI); //180/pi to get deg rather than rad
-			if(phimid < 0) {
-				phimid += 360; //makes negative phi's the correct positive
-			}
-			thetamid = t1mid.Theta()*(180/M_PI);
-			double slantDepthmid = h->Interpolate(phimid, thetamid);
-
-			cout << "det=" << idet << " " << "theta=" << thetamid << " " <<"phi=" << phimid << " " <<"depth=" << slantDepthmid << endl;
-
-			idet++;
-
 		}
 	}
 
 	f2->Write();		
 	f2->Close();
+	
+	double acc = (howManyHits/howManyTries)*(2*M_PI*pow(500.0,2));
+	//double acc = (howManyHits/howManyTries);
+	cout << "Acc: " << acc << endl;
+}
 
+//takes in two 3d points and x,y,z coords of square
+bool passThroughSquare(double p1x, double p1y, double p1z, double p2x, 
+		double p2y, double p2z, double sx1, double sx2, double sy1, double sy2, double sz) {
+	
+	//get parametric eq for line
+	double parx = p1x - p2x;
+	double pary = p1y - p2y;
+	double parz = p1z - p2z;
+	//(p1x + parx*t, p1y + pary*t, p1z + parz*t)
+	
+	double t = (sz - p1z)/parz; //find where the line is when z=zsquare
+	double parxAtsz = p1x + (parx*t);
+	double paryAtsz = p1y + (pary*t);
+	
+	if(parxAtsz >= sx1 && parxAtsz <= sx2) { //if the line falls in the square
+		if(paryAtsz >= sy1 && paryAtsz <= sy2) {
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse) {
