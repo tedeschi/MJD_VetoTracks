@@ -2,7 +2,7 @@ include $(MGDODIR)/buildTools/config.mk
 include $(MGDODIR)/buildTools/BasicROOTMakefile
 
 # Give the application name, which must be the stem of cc file with 'main'.  
-APPS = slantBin
+APPS = accCalc
 # The next two lines are important
 SHLIB = 
 ARCHIVE = 
@@ -15,8 +15,8 @@ LIBFLAGS = -L$(ROOTSYS)/lib -L$(MGDODIR)/lib -lMGDORoot -lMGDOBase -lMGDOTransfo
 	
 all: create
 
-create: slantBin.o
-	g++ -o slantBin slantBin.o $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --libs`
+create: accCalc.o
+	g++ -o accCalc accCalc.o $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --libs`
 
-slantBin.o: slantBin.cc slantBin.hh
-	g++ -o slantBin.o slantBin.cc -c $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --cflags`
+accCalc.o: accCalc.cc accCalc.hh
+	g++ -o accCalc.o accCalc.cc -c $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --cflags`

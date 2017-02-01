@@ -1,5 +1,5 @@
-#ifndef slantBin_hh
-#define slantBin_hh
+#ifndef accCalc_hh
+#define accCalc_hh
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +11,7 @@
 #include <TTree.h>
 #include <TH1D.h>
 #include <TH2F.h>
+#include <TH3D.h>
 #include <TF1.h>
 #include <TGraph.h>
 #include <TChain.h>
@@ -34,10 +35,10 @@
 #include "TGraphErrors.h"
 #include "TRandom.h"
 
-class slantBin
+class accCalc
 {
 	public:
-		slantBin();
+		accCalc();
 		int main();
 }
 

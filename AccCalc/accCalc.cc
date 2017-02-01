@@ -1,16 +1,16 @@
-// slantBin.cc
+// accCalc.cc
 // Sample tracks through "detector squares"
 // Bradley McClain, University of South Carolina
 
 //-----------------------------------------------------------------------
-#include "slantBin.hh"
+#include "accCalc.hh"
 using namespace std;
 
 map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse);
 bool passThroughSquare(double p1x, double p1y, double p1z, double p2x, 
 		double p2y, double p2z, double sx1, double sx2, double sy1, double sy2, double sz);
 
-void slantBin() {
+void accCalc() {
 	vector<vector<string>> bottom; //the non-parsed vectors read in
 	vector<vector<string>> top;
 	map<string,vector<vector<double>>> bottomCoords; //mapped detector numbers with their parsed coordinates
@@ -74,13 +74,19 @@ void slantBin() {
 //  
 	TFile *f = new TFile("../SlantDepth/output/slantHist.root");
 	TFile *f2 = new TFile("AccCalc.root","RECREATE");
+	//TH2D *h = (TH2D*)_file0->Get("");
 
+	//TH3D *upperPart = new TH3D("upperPart","upperPart", 1000, -550, 550, 1000, -550, 550, 1000, -200, 300);
 	TH1D *cosThetaPlot = new TH1D("cosThetaPlot","cosThetaUniformDist", 1000, -1, 1);
 	TH2D *xyPlot = new TH2D("xyPlot","xyUniformDist", 1000, -550, 550, 1000, -550, 550);
-	TH2D *upperxyPlot = new TH2D("upperxyPlot","upperxyUniformDist", 1000, -1000, 1000, 1000, -1000, 1000);
+	TH2D *xyUpperPlot = new TH2D("xyUpperPlot","xyUpperPlot", 1000, -550, 550, 1000, -550, 550);
+	TH2D *thetaPhiUpperPlot = new TH2D("thetaPhiUpperPlot","thetaPhiUpperPlot", 1000, 0, 1, 1000, 0, 360);
+	
 
-	double howManyHits = 0;
-	double howManyTries = 0;
+	double howManyHits[145] = {0};
+	double howManyTries[145] = {0};
+	double detAcc[145] = {0};
+	int theCounter = 0;
 	//now comes the permuation dance
 	// outer loop for top x,y,z
 	map<string, vector<vector<double>>>::iterator it;
@@ -134,39 +140,50 @@ void slantBin() {
 				yblo = tmpvcr2[2][1];
 				ybhi = tmpvcr2[0][1];
 			}
-
+			
+			theCounter++;
 			// innermost loop iterates within the top/bot combo
 			for (int i=0;i<100000;i++){
 				//acceptance -------------------------------------------
 				//bottom circle
-				double theX = gRandom->Uniform(-500.0, 500.0); //make a box of radius 5 meters
-				double theY = gRandom->Uniform(-500.0, 500.0);
-				double theZ = -200.0;
-				double outsideBound = pow(theX,2) + pow(theY,2); //eq for the circle inside box
+				double theLowerX = gRandom->Uniform(-500.0, 500.0); //make a box of radius 5 meters
+				double theLowerY = gRandom->Uniform(-500.0, 500.0);
+				double theLowerZ = -200.0;
+				double outsideBound = pow(theLowerX,2) + pow(theLowerY,2); //eq for the circle inside box
 				while(outsideBound >= pow(500,2)) { //if the point falls outside the circle, select a new one
-					theX = gRandom->Uniform(-500.0, 500.0);  
-					theY = gRandom->Uniform(-500.0, 500.0);
-					outsideBound = pow(theX,2) + pow(theY,2);
+					theLowerX = gRandom->Uniform(-500.0, 500.0);  
+					theLowerY = gRandom->Uniform(-500.0, 500.0);
+					outsideBound = pow(theLowerX,2) + pow(theLowerY,2);
 				}
 
 				//upper half sphere
-				double theUpperPhi = gRandom->Uniform(0, 360); //uniform distribution?
-				double theUpperTheta = gRandom->Uniform(0, 1);
+				double theUpperPhi = gRandom->Uniform(0, 360);
+				double theUpperTheta = acos(gRandom->Uniform(0, 1));
 				double theUpperX = 500 * cos(theUpperPhi) * sin(theUpperTheta);
-				double theUpperY = 500 * sin(theUpperPhi) * cos(theUpperTheta);
-				double theUpperZ = 500 * cos(theUpperTheta); //polar coordinates from origin
-				theUpperZ = theUpperZ + -200;
+				double theUpperY = 500 * sin(theUpperPhi) * sin(theUpperTheta);
+				double theUpperZ = 500 * cos(theUpperTheta) + theLowerZ; //polar coordinates from origin
+			//cout << theUpperTheta << endl;
 				
 				cosThetaPlot->Fill(theUpperTheta);
-				xyPlot->Fill(theX, theY);
-				upperxyPlot->Fill(theUpperX, theUpperY);
+				xyPlot->Fill(theLowerX, theLowerY);
+				thetaPhiUpperPlot->Fill(cos(theUpperTheta), theUpperPhi);
+				xyUpperPlot->Fill(theUpperX, theUpperY);
+				//upperPart->Fill(theUpperX, theUpperY, theUpperZ);
 				
 				//check if the line went through the dets.
-				if(passThroughSquare(theUpperX, theUpperY, theUpperZ, theX, theY, theZ, xtlo, xthi, ytlo, ythi, zTop) == true 
-					&& passThroughSquare(theUpperX, theUpperY, theUpperZ, theX, theY, theZ, xblo, xbhi, yblo, ybhi, zBot) == true) {
-					howManyHits++;
+				if(passThroughSquare(theUpperX, theUpperY, theUpperZ, theLowerX, theLowerY, theLowerZ, xtlo, xthi, ytlo, ythi, zTop) == true 
+					&& passThroughSquare(theUpperX, theUpperY, theUpperZ, theLowerX, theLowerY, theLowerZ, xblo, xbhi, yblo, ybhi, zBot) == true) {
+					howManyHits[theCounter]++;
+					/*
+					cout << "its a hit!" << endl;
+					cout << "TheUpperX: " << theUpperX << " TheUpperY: " << theUpperY << " TheUpperZ: " << theUpperZ << endl;
+					cout << "TheLowerX: " << theLowerX << " TheLowerY: " << theLowerY << " TheLowerZ: " << theLowerZ << endl;
+					cout << xtlo <<" "<< xthi<<" " << ytlo<<" " << ythi<<" " << zTop << endl;
+					cout << xblo<<" " << xbhi<<" " << yblo<<" " << ybhi<<" " << zBot << endl << endl;
+					*/
 				}
-				howManyTries++;
+				howManyTries[theCounter]++;
+				//cout << passThroughSquare(2,2,2,-2,-2,-2,-1,1,-1,1,0);
 				// -----------------------------------------------------
 			}
 		}
@@ -175,9 +192,14 @@ void slantBin() {
 	f2->Write();		
 	f2->Close();
 	
-	double acc = (howManyHits/howManyTries)*(2*M_PI*pow(500.0,2));
-	//double acc = (howManyHits/howManyTries);
-	cout << "Acc: " << acc << endl;
+	double totalAcc = 0;
+	for(int i = 1; i <= 144; i++) {
+		detAcc[i] = (howManyHits[i]/howManyTries[i])*(2*M_PI*pow(500.0,2)*M_PI); //(2*M_PI*pow(500.0,2)*M_PI) ~= 5,000,000
+		//double acc = (howManyHits/howManyTries);
+		cout << "Det num: " << i << " How many Hits: " << howManyHits[i] << " How many tries: " << howManyTries[i] << " Acc: " << detAcc[i] << endl;
+		totalAcc += detAcc[i];
+	}
+	cout << "Total Acc: " << totalAcc << endl;
 }
 
 //takes in two 3d points and x,y,z coords of square
@@ -193,6 +215,7 @@ bool passThroughSquare(double p1x, double p1y, double p1z, double p2x,
 	double t = (sz - p1z)/parz; //find where the line is when z=zsquare
 	double parxAtsz = p1x + (parx*t);
 	double paryAtsz = p1y + (pary*t);
+	//cout << "p1x:" << p1x << cout << " p2x:" << p2x << " sx1:" << sx1 << " sx2:" << sx2 << endl;
 	
 	if(parxAtsz >= sx1 && parxAtsz <= sx2) { //if the line falls in the square
 		if(paryAtsz >= sy1 && paryAtsz <= sy2) {
@@ -232,6 +255,6 @@ map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse) {
 }
 
 int main() {
-	slantBin();
+	accCalc();
 	return 0;
 }
