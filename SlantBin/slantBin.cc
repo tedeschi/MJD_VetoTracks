@@ -161,7 +161,7 @@ void slantBin() {
 			ybmid = yblo + 0.5*(ybhi-yblo);
 
 			// innermost loop iterates within the top/bot combo
-			for (int i=0;i<100000;i++){
+			for (int i=0;i<10000;i++){
 				double xTopRand=gRandom->Uniform(xtlo,xthi);        //goal is to generate random numbers between tmpvcr[0][0] and tmpvcr[2][0]
 				double yTopRand=gRandom->Uniform(ytlo,ythi);        //goal is to generate random numbers between tmpvcr[0][1] and tmpvcr[2][1]
 				double zTop = tmpvcr[0][2];

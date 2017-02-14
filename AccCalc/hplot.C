@@ -12,23 +12,17 @@
 void hplot(){
 
 	// open the file
-	TFile *f = new TFile("slantBin.root");
+	TFile *f = new TFile("AccCalc.root");
 
  	//get hists
-	TH1D *hSlantDepth[144];
 	TH2D *hTopXY[144];
 	TH2D *hBotXY[144];
-	TH2D *hThetaPhi[144];
 	char *histname = new char[20];
 	for (int i=0; i<144; i++){
-		sprintf(histname, "hSlantDepth_%d",i);
-		hSlantDepth[i] = (TH1D*)f->Get(histname);
 		sprintf(histname, "hTopXY_%d",i);
 		hTopXY[i] = (TH2D*)f->Get(histname);
 		sprintf(histname, "hBotXY_%d",i);
 		hBotXY[i] = (TH2D*)f->Get(histname);
-		sprintf(histname, "hThetaPhi_%d",i);
-		hThetaPhi[i] = (TH2D*)f->Get(histname);
 	}
 
 
@@ -37,14 +31,14 @@ void hplot(){
 	//-----------------------------------------------------------------------------------------
   	//create slant depth TCanvasses
 	int aCounter = 33;
-	
+	/*
   	TCanvas *can1 = new TCanvas("can1","slant depth 1",0,0,800,800);
 	can1->Divide(6,6,0,0);
-	/*for (Int_t i=0;i<36;i++){
+	for (Int_t i=0;i<36;i++){
 		can1->cd(1+i);
 		hSlantDepth[i]->Draw();
 	}
-	*/
+	
 	for (Int_t i=1;i<=36;i++){
 		can1->cd(i);
 		hSlantDepth[aCounter]->Draw();
@@ -57,11 +51,11 @@ void hplot(){
   	TCanvas *can2 = new TCanvas("can2","slant depth 2 ",0,50,800,800);
 	can2->Divide(6,6,0,0);
 	aCounter = 69;
-	/*for (Int_t i=36;i<72;i++){
+	for (Int_t i=36;i<72;i++){
 		can2->cd(1+i-36);
 		hSlantDepth[i]->Draw();
 	}
-	*/
+	
 	for (Int_t i=37;i<=72;i++){
 		can2->cd(i-36);
 		hSlantDepth[aCounter]->Draw();
@@ -74,11 +68,11 @@ void hplot(){
   	TCanvas *can3 = new TCanvas("can3","slant depth 3",0,100,800,800);
 	can3->Divide(6,6,0,0);
 	aCounter = 105;
-	/*for (Int_t i=72;i<108;i++){
+	for (Int_t i=72;i<108;i++){
 		can3->cd(1+i-72);
 		hSlantDepth[i]->Draw();
 	}
-	*/
+	
 	for (Int_t i=73;i<=108;i++){
 		can3->cd(i-72);
 		hSlantDepth[aCounter]->Draw();
@@ -91,11 +85,11 @@ void hplot(){
   	TCanvas *can4 = new TCanvas("can4","slant depth 4",0,150,800,800);
 	can4->Divide(6,6,0,0);
 	aCounter = 141;
-	/*for (Int_t i=108;i<144;i++){
+	for (Int_t i=108;i<144;i++){
 		can4->cd(1+i-108);
 		hSlantDepth[i]->Draw();
 	}
-	*/
+	
 	for (Int_t i=109;i<=144;i++){
 		can4->cd(i-108);
 		hSlantDepth[aCounter]->Draw();
@@ -104,7 +98,7 @@ void hplot(){
 		}
 		aCounter++;
 	}
-
+	*/
 	//-----------------------------------------------------------------------------------------
  	//create XY coverage TCanvasses
   	TCanvas *Tcan1 = new TCanvas("Tcan1","XY 1",100,0,800,800);
@@ -203,14 +197,15 @@ void hplot(){
 	}
 	//-----------------------------------------------------------------------------------------
   	//create slant depth TCanvasses
+  	/*
   	TCanvas *Acan1 = new TCanvas("Acan1","ThetaPhi 1",200,0,800,800);
 	Acan1->Divide(6,6,0,0);
 	aCounter = 33;
-	/*for (Int_t i=0;i<36;i++){
+	for (Int_t i=0;i<36;i++){
 		Acan1->cd(1+i);
 		hThetaPhi[i]->Draw();
 	}
-	*/
+	
 	for(Int_t i = 1; i <= 36; i++) {
 		Acan1->cd(i);
 		hThetaPhi[aCounter]->Draw();
@@ -223,11 +218,11 @@ void hplot(){
   	TCanvas *Acan2 = new TCanvas("Acan2","ThetaPhi 2 ",200,50,800,800);
 	Acan2->Divide(6,6,0,0);
 	aCounter = 69;
-	/*for (Int_t i=36;i<72;i++){
+	for (Int_t i=36;i<72;i++){
 		Acan2->cd(1+i-36);
 		hThetaPhi[i]->Draw();
 	}
-	*/
+	
 	for(Int_t i = 37; i <= 72; i++) {
 		Acan2->cd(i-36);
 		hThetaPhi[aCounter]->Draw();
@@ -240,11 +235,11 @@ void hplot(){
   	TCanvas *Acan3 = new TCanvas("Acan3","ThetaPhi 3",200,100,800,800);
 	Acan3->Divide(6,6,0,0);
 	aCounter = 105;
-	/*for (Int_t i=72;i<108;i++){
+	for (Int_t i=72;i<108;i++){
 		Acan3->cd(1+i-72);
 		hThetaPhi[i]->Draw();
 	}
-	*/
+	
 	for(Int_t i = 73; i <= 108; i++) {
 		Acan3->cd(i-72);
 		hThetaPhi[aCounter]->Draw();
@@ -257,11 +252,11 @@ void hplot(){
   	TCanvas *Acan4 = new TCanvas("Acan4","ThetaPhi 4",200,150,800,800);
 	Acan4->Divide(6,6,0,0);
 	aCounter = 141;
-	/*for (Int_t i=108;i<144;i++){
+	for (Int_t i=108;i<144;i++){
 		Acan4->cd(1+i-108);
 		hThetaPhi[i]->Draw();
 	}
-	*/
+	
 	for(Int_t i = 109; i <= 144; i++) {
 		Acan4->cd(i-108);
 		hThetaPhi[aCounter]->Draw();
@@ -270,5 +265,5 @@ void hplot(){
 		}
 		aCounter++;
 	}
-
+	*/
 }

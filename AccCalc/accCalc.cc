@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 #include "accCalc.hh"
 using namespace std;
+static int howManyIters = 1000000;
 
 map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse);
 bool passThroughSquare(double p1x, double p1y, double p1z, double p2x, 
@@ -75,6 +76,10 @@ void accCalc() {
 	TFile *f = new TFile("../SlantDepth/output/slantHist.root");
 	TFile *f2 = new TFile("AccCalc.root","RECREATE");
 	//TH2D *h = (TH2D*)_file0->Get("");
+	
+	TH2D *hTopXY[144]; 
+	TH2D *hBotXY[144];
+	char *histname = new char[20];
 
 	//TH3D *upperPart = new TH3D("upperPart","upperPart", 1000, -550, 550, 1000, -550, 550, 1000, -200, 300);
 	TH1D *cosThetaPlot = new TH1D("cosThetaPlot","cosThetaUniformDist", 1000, -1, 1);
@@ -82,10 +87,17 @@ void accCalc() {
 	TH2D *xyUpperPlot = new TH2D("xyUpperPlot","xyUpperPlot", 1000, -550, 550, 1000, -550, 550);
 	TH2D *thetaPhiUpperPlot = new TH2D("thetaPhiUpperPlot","thetaPhiUpperPlot", 1000, 0, 1, 1000, 0, 360);
 	
+	for (int i=0; i<144; i++) {
+		sprintf(histname, "hTopXY_%d",i);
+		hTopXY[i] = new TH2D(histname,histname, 1000, -550, 550, 1000, -550, 550);
+		sprintf(histname, "hBotXY_%d",i);
+		hBotXY[i] = new TH2D(histname,histname, 1000, -550, 550, 1000, -550, 550);
+	}
 
 	double howManyHits[145] = {0};
 	double howManyTries[145] = {0};
 	double detAcc[145] = {0};
+	string theDetNums[145];
 	int theCounter = 0;
 	//now comes the permuation dance
 	// outer loop for top x,y,z
@@ -113,7 +125,6 @@ void accCalc() {
 			ytlo = tmpvcr[2][1];
 			ythi = tmpvcr[0][1];
 		}
-		
 		//next loop for botton x,y,z
 		vector<vector<double>> tmpvcr2;
 		map<string, vector<vector<double>>>::iterator it2;
@@ -142,8 +153,11 @@ void accCalc() {
 			}
 			
 			theCounter++;
+			theDetNums[theCounter] = (it->first);
+			theDetNums[theCounter] += " and ";
+			theDetNums[theCounter] += (it2->first);
 			// innermost loop iterates within the top/bot combo
-			for (int i=0;i<100000;i++){
+			for (int i=0;i<howManyIters;i++){
 				//acceptance -------------------------------------------
 				//bottom circle
 				double theLowerX = gRandom->Uniform(-500.0, 500.0); //make a box of radius 5 meters
@@ -174,6 +188,8 @@ void accCalc() {
 				if(passThroughSquare(theUpperX, theUpperY, theUpperZ, theLowerX, theLowerY, theLowerZ, xtlo, xthi, ytlo, ythi, zTop) == true 
 					&& passThroughSquare(theUpperX, theUpperY, theUpperZ, theLowerX, theLowerY, theLowerZ, xblo, xbhi, yblo, ybhi, zBot) == true) {
 					howManyHits[theCounter]++;
+					hTopXY[theCounter-1]->Fill(theUpperX, theUpperY);
+					hBotXY[theCounter-1]->Fill(theLowerX, theLowerY);
 					/*
 					cout << "its a hit!" << endl;
 					cout << "TheUpperX: " << theUpperX << " TheUpperY: " << theUpperY << " TheUpperZ: " << theUpperZ << endl;
@@ -195,8 +211,8 @@ void accCalc() {
 	double totalAcc = 0;
 	for(int i = 1; i <= 144; i++) {
 		detAcc[i] = (howManyHits[i]/howManyTries[i])*(2*M_PI*pow(500.0,2)*M_PI); //(2*M_PI*pow(500.0,2)*M_PI) ~= 5,000,000
-		//double acc = (howManyHits/howManyTries);
-		cout << "Det num: " << i << " How many Hits: " << howManyHits[i] << " How many tries: " << howManyTries[i] << " Acc: " << detAcc[i] << endl;
+		
+		cout << "Det nums: " << theDetNums[i] << " How many Hits: " << howManyHits[i] << " How many tries: " << howManyTries[i] << " Acc: " << detAcc[i] << endl;
 		totalAcc += detAcc[i];
 	}
 	cout << "Total Acc: " << totalAcc << endl;
