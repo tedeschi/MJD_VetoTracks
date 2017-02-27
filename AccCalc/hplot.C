@@ -15,10 +15,10 @@ void hplot(){
 	TFile *f = new TFile("AccCalc.root");
 
  	//get hists
-	TH2D *hTopXY[144];
-	TH2D *hBotXY[144];
+	TH2D *hTopXY[145];
+	TH2D *hBotXY[145];
 	char *histname = new char[20];
-	for (int i=0; i<144; i++){
+	for (int i=1; i<=144; i++){
 		sprintf(histname, "hTopXY_%d",i);
 		hTopXY[i] = (TH2D*)f->Get(histname);
 		sprintf(histname, "hBotXY_%d",i);
@@ -103,15 +103,15 @@ void hplot(){
  	//create XY coverage TCanvasses
   	TCanvas *Tcan1 = new TCanvas("Tcan1","XY 1",100,0,800,800);
 	Tcan1->Divide(6,6,0,0);
-	/*for (Int_t i=0;i<36;i++){
-		Tcan1->cd(1+i);
+	for (Int_t i=1;i<=36;i++){
+		Tcan1->cd(i);
 		hTopXY[i]->SetFillColor(2);
 		hTopXY[i]->Draw("box");
 		hBotXY[i]->SetFillColor(3);
 		hBotXY[i]->Draw("same");
 
 	}
-	*/
+	/*
 	aCounter = 33;
 	for(Int_t i = 1; i <= 36; i++) {
 		Tcan1->cd(i);
@@ -124,17 +124,17 @@ void hplot(){
 		}
 		aCounter++;
 	}
-	
+	*/
   	TCanvas *Tcan2 = new TCanvas("Tcan2","XY 2 ",100,50,800,800);
 	Tcan2->Divide(6,6,0,0);
-	/*for (Int_t i=36;i<72;i++){
-		Tcan2->cd(1+i-36);
+	for (Int_t i=37;i<=72;i++){
+		Tcan2->cd(i-36);
 		hTopXY[i]->SetFillColor(2);
 		hTopXY[i]->Draw("box");
 		hBotXY[i]->SetFillColor(3);
 		hBotXY[i]->Draw("same");
 	}
-	*/
+	/*
 	aCounter = 69;
 	for(Int_t i = 37; i <= 72; i++) {
 		Tcan2->cd(i-36);
@@ -147,19 +147,19 @@ void hplot(){
 		}
 		aCounter++;
 	}
-	
+	*/
   	TCanvas *Tcan3 = new TCanvas("Tcan3","XY 3",100,100,800,800);
 	Tcan3->Divide(6,6,0,0);
 	
-	/*for (Int_t i=72;i<108;i++){
-		Tcan3->cd(1+i-72);
+	for (Int_t i=73;i<=108;i++){
+		Tcan3->cd(i-72);
 		hTopXY[i]->SetFillColor(2);
 		hTopXY[i]->Draw("box");
 		hBotXY[i]->SetFillColor(3);
 		hBotXY[i]->Draw("same");
 
 	}
-	*/
+	/*
 	aCounter = 105;
 	for(Int_t i = 73; i <= 108; i++) {
 		Tcan3->cd(i-72);
@@ -172,17 +172,17 @@ void hplot(){
 		}
 		aCounter++;
 	}
-	
+	*/
   	TCanvas *Tcan4 = new TCanvas("Tcan4","XY 4",100,150,800,800);
 	Tcan4->Divide(6,6,0,0);
-	/*for (Int_t i=108;i<144;i++){
-		Tcan4->cd(1+i-108);
+	for (Int_t i=109;i<=144;i++){
+		Tcan4->cd(i-108);
 		hTopXY[i]->SetFillColor(2);
 		hTopXY[i]->Draw("box");
 		hBotXY[i]->SetFillColor(3);
 		hBotXY[i]->Draw("same");
 	}
-	*/
+	/*
 	aCounter = 141;
 	for(Int_t i = 109; i <= 144; i++) {
 		Tcan4->cd(i-108);
@@ -195,6 +195,7 @@ void hplot(){
 		}
 		aCounter++;
 	}
+	*/
 	//-----------------------------------------------------------------------------------------
   	//create slant depth TCanvasses
   	/*

@@ -7,6 +7,7 @@
 using namespace std;
 
 map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse);
+static list<string> insertionOrder; //this is needed because maps DO NOT keep insertion order
 
 void slantBin() {
 	vector<vector<string>> bottom; //the non-parsed vectors read in
@@ -15,7 +16,7 @@ void slantBin() {
 	map<string,vector<vector<double>>> topCoords;
 	
 	ifstream infile;
-	infile.open("DetCoordsUpdated2.txt");
+	infile.open("DetCoordsUpdated3.txt");
 	string line,cell;
 	int counter = 0;
 	
@@ -51,6 +52,10 @@ void slantBin() {
 	//now to parse
 	bottomCoords = doTheParse(bottom);
 	topCoords = doTheParse(top);
+	insertionOrder.pop_back(); //I know, it's ugly. But it works.
+	insertionOrder.pop_back();
+	insertionOrder.pop_back();
+	insertionOrder.pop_back();
 	
 	//an example on how to iterate through the map
 	
@@ -74,26 +79,28 @@ void slantBin() {
 	TH2F *h = (TH2F*)f->Get("slantLowTheta");
 
 	TFile *f2 = new TFile("slantBin.root","RECREATE");
+	ofstream outputfile;
+	outputfile.open("slantBin.txt");
 
-	TH1D *hSlantDepth[144];
-	TH2D *hTopXY[144]; 
-	TH2D *hBotXY[144]; 
-	TH2D *hThetaPhi[144];
+	TH1D *hSlantDepth[145];
+	TH2D *hTopXY[145]; 
+	TH2D *hBotXY[145]; 
+	TH2D *hThetaPhi[145];
 	char *histname = new char[20];
 
-	for (int i=0; i<144; i++){
+	for (int i=1; i<=144; i++){
 		sprintf(histname, "hSlantDepth_%d",i);
-		hSlantDepth[i] = new TH1D(histname,histname, 1000, 1400., 2800.);
+//		hSlantDepth[i] = new TH1D(histname,histname, 1000, 1400., 2800.);
+		hSlantDepth[i] = new TH1D(histname,histname, 1000, 4., 8.);
 		sprintf(histname, "hTopXY_%d",i);
 		hTopXY[i] = new TH2D(histname,histname, 240, -120., 120., 240, -120. , 120.);
 		sprintf(histname, "hBotXY_%d",i);
 		hBotXY[i] = new TH2D(histname,histname, 240, -120., 120., 240, -120. , 120.);
 		sprintf(histname, "hThetaPhi_%d",i);
 		hThetaPhi[i] = new TH2D(histname,histname, 100, 0, 360., 100, 0. , 90.);
-
 	}
 	gRandom->SetSeed(0); // uses time for seed
-	int idet=0;
+	int idet=1;
 	
 	//now comes the permuation dance
 	// outer loop for top x,y,z
@@ -129,10 +136,11 @@ void slantBin() {
 
 		
 		//next loop for botton x,y,z
-		vector<vector<double>> tmpvcr2;
-		map<string, vector<vector<double>>>::iterator it2;
-		for (it2 = bottomCoords.begin(); it2 != bottomCoords.end(); ++it2) {
-			tmpvcr2 = (it2->second);
+		//map<string, vector<vector<double>>>::iterator it2;
+		list<string>::iterator it2;
+		for (it2 = insertionOrder.begin(); it2 != insertionOrder.end(); ++it2) {
+			string theIteration = (string)*it2;
+			vector<vector<double>> tmpvcr2 = bottomCoords.find(theIteration)->second;
 			
 			//check bottom coords
 			//cout << tmpvcr2[0][0] << " " << tmpvcr2[2][0] << " " << tmpvcr2[0][2] << endl;
@@ -190,8 +198,10 @@ void slantBin() {
 				hThetaPhi[idet]->Fill(phi,theta);
 
 				double slantDepth = h->Interpolate(phi, theta);
-				hSlantDepth[idet]->Fill(slantDepth);
-
+				double slantDepth_kmwe = slantDepth*2.86/1000.;
+				//weight contribution by cross section (use Meei-Hime fit)
+				double weight=8.6E-6*exp(-slantDepth_kmwe/0.45)+0.44E-6*exp(-slantDepth_kmwe/0.87);
+				hSlantDepth[idet]->Fill(slantDepth_kmwe,weight);
 			}
 
 			TVector3 r1mid;
@@ -208,10 +218,12 @@ void slantBin() {
 				phimid += 360; //makes negative phi's the correct positive
 			}
 			thetamid = t1mid.Theta()*(180/M_PI);
+			
 			double slantDepthmid = h->Interpolate(phimid, thetamid);
 
-			cout << "det=" << idet << " " << "theta=" << thetamid << " " <<"phi=" << phimid << " " <<"depth=" << slantDepthmid << endl;
-
+			//cout << "det=" << idet << " " << "theta=" << thetamid << " " <<"phi=" << phimid << " " <<"depth=" << slantDepthmid << endl;
+			cout  << hSlantDepth[idet]->GetMean()<< " "  << hSlantDepth[idet]->GetStdDev() << endl;
+			outputfile << idet << " " << hSlantDepth[idet]->GetMean()<< " "  << hSlantDepth[idet]->GetStdDev() << endl;
 			idet++;
 
 		}
@@ -219,7 +231,7 @@ void slantBin() {
 
 	f2->Write();		
 	f2->Close();
-
+	outputfile.close();
 }
 
 map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse) {
@@ -244,6 +256,7 @@ map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse) {
 			theCoords.push_back(theCoords2);
 		}
 		theReturnMap[theParse[i][0]] = theCoords;
+		insertionOrder.push_back(theParse[i][0]);
 		//cout << endl;
 	}
 	

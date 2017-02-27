@@ -5,11 +5,14 @@
 //-----------------------------------------------------------------------
 #include "accCalc.hh"
 using namespace std;
-static int howManyIters = 1000000;
+static int howManyIters = 100;
 
 map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse);
 bool passThroughSquare(double p1x, double p1y, double p1z, double p2x, 
 		double p2y, double p2z, double sx1, double sx2, double sy1, double sy2, double sz);
+int iDetIndex(int t1,int t2,int b1,int b2);
+
+static list<string> insertionOrder; //this is needed because maps DO NOT keep insertion order
 
 void accCalc() {
 	vector<vector<string>> bottom; //the non-parsed vectors read in
@@ -17,8 +20,9 @@ void accCalc() {
 	map<string,vector<vector<double>>> bottomCoords; //mapped detector numbers with their parsed coordinates
 	map<string,vector<vector<double>>> topCoords;
 	
+	
 	ifstream infile;
-	infile.open("DetCoordsUpdated2.txt");
+	infile.open("DetCoordsUpdated3.txt");
 	string line,cell;
 	int counter = 0;
 	
@@ -54,7 +58,11 @@ void accCalc() {
 	//now to parse
 	bottomCoords = doTheParse(bottom);
 	topCoords = doTheParse(top);
-	
+	insertionOrder.pop_back(); //I know, it's ugly. But it works. Gets rid of top panels in the order.
+	insertionOrder.pop_back();
+	insertionOrder.pop_back();
+	insertionOrder.pop_back();
+
 	//an example on how to iterate through the map
 	
 	/*map<string, vector<vector<double>>>::iterator it;
@@ -73,12 +81,12 @@ void accCalc() {
 //
 // histogram definitions
 //  
-	TFile *f = new TFile("../SlantDepth/output/slantHist.root");
+	//TFile *f = new TFile("../SlantDepth/output/slantHist.root");
 	TFile *f2 = new TFile("AccCalc.root","RECREATE");
 	//TH2D *h = (TH2D*)_file0->Get("");
 	
-	TH2D *hTopXY[144]; 
-	TH2D *hBotXY[144];
+	TH2D *hTopXY[145]; 
+	TH2D *hBotXY[145];
 	char *histname = new char[20];
 
 	//TH3D *upperPart = new TH3D("upperPart","upperPart", 1000, -550, 550, 1000, -550, 550, 1000, -200, 300);
@@ -87,7 +95,7 @@ void accCalc() {
 	TH2D *xyUpperPlot = new TH2D("xyUpperPlot","xyUpperPlot", 1000, -550, 550, 1000, -550, 550);
 	TH2D *thetaPhiUpperPlot = new TH2D("thetaPhiUpperPlot","thetaPhiUpperPlot", 1000, 0, 1, 1000, 0, 360);
 	
-	for (int i=0; i<144; i++) {
+	for (int i=1; i<=144; i++) {
 		sprintf(histname, "hTopXY_%d",i);
 		hTopXY[i] = new TH2D(histname,histname, 1000, -550, 550, 1000, -550, 550);
 		sprintf(histname, "hBotXY_%d",i);
@@ -126,10 +134,15 @@ void accCalc() {
 			ythi = tmpvcr[0][1];
 		}
 		//next loop for botton x,y,z
-		vector<vector<double>> tmpvcr2;
-		map<string, vector<vector<double>>>::iterator it2;
-		for (it2 = bottomCoords.begin(); it2 != bottomCoords.end(); ++it2) {
-			tmpvcr2 = (it2->second);
+		 
+		/* These next few lines are needed because maps do not keep insertion order.
+		 * Instead, A list is used for iteration that then retreives the correct value
+		 * from the map. The value is stored as a double vector because they are coordinates.
+		 */
+		list<string>::iterator it2;
+		for (it2 = insertionOrder.begin(); it2 != insertionOrder.end(); ++it2) {
+			string theIteration = (string)*it2;
+			vector<vector<double>> tmpvcr2 = bottomCoords.find(theIteration)->second;
 
 			double xblo,yblo;
 			double xbhi,ybhi;
@@ -155,7 +168,7 @@ void accCalc() {
 			theCounter++;
 			theDetNums[theCounter] = (it->first);
 			theDetNums[theCounter] += " and ";
-			theDetNums[theCounter] += (it2->first);
+			theDetNums[theCounter] += theIteration;
 			// innermost loop iterates within the top/bot combo
 			for (int i=0;i<howManyIters;i++){
 				//acceptance -------------------------------------------
@@ -180,16 +193,16 @@ void accCalc() {
 				
 				cosThetaPlot->Fill(theUpperTheta);
 				xyPlot->Fill(theLowerX, theLowerY);
+				
 				thetaPhiUpperPlot->Fill(cos(theUpperTheta), theUpperPhi);
 				xyUpperPlot->Fill(theUpperX, theUpperY);
-				//upperPart->Fill(theUpperX, theUpperY, theUpperZ);
 				
 				//check if the line went through the dets.
 				if(passThroughSquare(theUpperX, theUpperY, theUpperZ, theLowerX, theLowerY, theLowerZ, xtlo, xthi, ytlo, ythi, zTop) == true 
 					&& passThroughSquare(theUpperX, theUpperY, theUpperZ, theLowerX, theLowerY, theLowerZ, xblo, xbhi, yblo, ybhi, zBot) == true) {
 					howManyHits[theCounter]++;
-					hTopXY[theCounter-1]->Fill(theUpperX, theUpperY);
-					hBotXY[theCounter-1]->Fill(theLowerX, theLowerY);
+					hTopXY[theCounter]->Fill(theUpperX, theUpperY);
+					hBotXY[theCounter]->Fill(theLowerX, theLowerY);
 					/*
 					cout << "its a hit!" << endl;
 					cout << "TheUpperX: " << theUpperX << " TheUpperY: " << theUpperY << " TheUpperZ: " << theUpperZ << endl;
@@ -208,13 +221,19 @@ void accCalc() {
 	f2->Write();		
 	f2->Close();
 	
+	ofstream outputfile;
+	outputfile.open("accCalc.txt");
 	double totalAcc = 0;
+	
 	for(int i = 1; i <= 144; i++) {
 		detAcc[i] = (howManyHits[i]/howManyTries[i])*(2*M_PI*pow(500.0,2)*M_PI); //(2*M_PI*pow(500.0,2)*M_PI) ~= 5,000,000
 		
-		cout << "Det nums: " << theDetNums[i] << " How many Hits: " << howManyHits[i] << " How many tries: " << howManyTries[i] << " Acc: " << detAcc[i] << endl;
+		cout << i << "Det nums: " << theDetNums[i] << " How many Hits: " << howManyHits[i] << " How many tries: " << howManyTries[i] << " Acc: " << detAcc[i] << endl;
 		totalAcc += detAcc[i];
+		
+		outputfile << i << " " << detAcc[i] << endl;
 	}
+	outputfile.close();
 	cout << "Total Acc: " << totalAcc << endl;
 }
 
@@ -242,6 +261,7 @@ bool passThroughSquare(double p1x, double p1y, double p1z, double p2x,
 	return false;
 }
 
+//parses the input file
 map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse) {
 	map<string,vector<vector<double>>> theReturnMap;
 	
@@ -264,10 +284,35 @@ map<string,vector<vector<double>>> doTheParse(vector<vector<string>> theParse) {
 			theCoords.push_back(theCoords2);
 		}
 		theReturnMap[theParse[i][0]] = theCoords;
-		//cout << endl;
+		insertionOrder.push_back(theParse[i][0]);
 	}
 	
 	return theReturnMap;
+}
+
+//This function takes in 2 top, 2 bottom panels and returns the 
+//index (1-144) of the combination of those panels
+int iDetIndex(int t1,int t2,int b1,int b2) {
+	int theIdet = 0;
+	int hi = 0;
+	int lo = 0;
+	
+	if(t1 == 19 || t2 == 19)
+		theIdet += 144/2;
+	if(t1 == 22 || t2 == 22)
+		theIdet += 144/4;
+	if(b1 > b2) {
+		hi = b1;
+		lo = b2;
+	}
+	else {
+		lo = b1;
+		hi = b2;
+	}
+	theIdet += lo;
+	theIdet += ((hi-7)*6);
+	
+	return theIdet;
 }
 
 int main() {
