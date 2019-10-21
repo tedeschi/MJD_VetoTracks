@@ -1,5 +1,5 @@
-#ifndef VetoDisplay_hh
-#define VetoDisplay_hh
+#ifndef VetoDisplayGrapher_hh
+#define VetoDisplayGrapher_hh
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>

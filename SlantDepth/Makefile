@@ -15,12 +15,6 @@ LIBFLAGS = -L$(ROOTSYS)/lib -L$(MGDODIR)/lib -lMGDORoot -lMGDOBase -lMGDOTransfo
 	
 all: create
 	
-#create: VetoDisplay.o
-#	g++ -o VetoDisplay VetoDisplay.o $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --libs`
-
-#VetoDisplay.o: VetoDisplay.cc VetoDisplay.hh
-#	g++ -o VetoDisplay.o VetoDisplay.cc -c $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --cflags`
-
 create: SlantDepth.o
 	g++ -o SlantDepth SlantDepth.o $(INCLUDEFLAGS) $(LIBFLAGS) `root-config --libs`
 

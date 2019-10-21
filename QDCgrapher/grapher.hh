@@ -1,5 +1,5 @@
-#ifndef VetoDisplay_hh
-#define VetoDisplay_hh
+#ifndef grapher_hh
+#define grapher_hh
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,8 +19,6 @@
 #include "TBenchmark.h"
 #include <TColor.h>
 #include <TStyle.h>
-#include <TAxis.h>
-#include <TGaxis.h>
 
 #include "TProfile.h"
 #include "TGeoManager.h"
@@ -33,6 +31,14 @@
 #include "TVector3.h"
 #include "TApplication.h"
 #include "TGeoCompositeShape.h"
+#include "TGraphErrors.h"
+
+class grapher
+{
+	public:
+		grapher();
+		int main();
+}
 
 #endif
 ;
